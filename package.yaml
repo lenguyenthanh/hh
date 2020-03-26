@@ -1,0 +1,62 @@
+name:                hh
+version:             0.1.0.0
+github:              "lenguyenthanh/hh"
+license:             BSD3
+author:              "Thanh Le"
+maintainer:          "lenguyenthanh@hotmail.com"
+copyright:           "2020 Thanh Le"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         A Git multirepo management tool.
+
+dependencies:
+- base >= 4.7 && < 5
+- optparse-applicative
+- path
+- exceptions
+- directory
+- errors
+- mtl
+- bytestring
+- text
+- aeson
+- safe-exceptions
+- filepath
+
+default-extensions:
+- OverloadedStrings
+
+library:
+  source-dirs: src
+
+executables:
+  hh:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hh
+
+tests:
+  hh-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hh
