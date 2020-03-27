@@ -2,16 +2,19 @@
 
 module Command
     (Command(..)
-    , UserConfig(..)
     , commands
     )
   where
 
-import UserConfig
 import Data.Aeson
 import Options.Applicative
+import qualified Path as P
+import UserConfig
+import Data.Bifunctor (bimap)
 
-data Command = Init { config :: UserConfig }
+data Command = Init {
+                    absRootPath :: String
+                    , githubToken :: String }
              | ShowConfig
   deriving (Show)
 
@@ -28,12 +31,23 @@ commands = hsubparser
                 (progDesc "Show your configuration")
           )
     )
-    -- <**> versionOption <**> helper
 
 initCommand :: Parser Command
-initCommand = Init <$> userConfig
+initCommand = Init
+          <$> option parseRoot
+            (long "root"
+            <> short 'r'
+            <> metavar "dir"
+            <> help "Root directory for all repositories")
+          <*> strOption
+            (long "token"
+            <> short 't'
+            <> metavar "Github token"
+            <> help "We need your github token to query github api")
 
-versionOption :: Parser (a -> a)
-versionOption = infoOption
-    ("hh version 0.1.0")
-    (short 'v' <> long "version" <> help "Show the program version" <> hidden)
+parseRoot :: ReadM String
+parseRoot = eitherReader parseAbsDir
+
+parseAbsDir :: FilePath -> Either String String
+parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f
+

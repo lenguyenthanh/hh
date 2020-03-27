@@ -20,7 +20,7 @@ main = runCommand =<< execParser opts
         <> header hhHeader)
 
 runCommand :: Command -> IO ()
-runCommand (Init { config }) = saveConfig config
+runCommand (Init {absRootPath, githubToken}) = saveConfig absRootPath githubToken
 runCommand ShowConfig = showConfig
 
 versionOption :: Parser (a -> a)

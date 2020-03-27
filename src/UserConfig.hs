@@ -1,8 +1,8 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module UserConfig
     (UserConfig(..)
-    , userConfig
     , saveConfig
     , showConfig
     )
@@ -10,54 +10,40 @@ module UserConfig
 
 import System.FilePath ((</>))
 import Data.Aeson
-import Data.Bifunctor (bimap)
 import Data.Text
 import GHC.Generics
-import Options.Applicative
-import qualified Path as P
 import System.Directory
 import Control.Exception.Safe
 import qualified Data.ByteString.Lazy as LB
+import qualified Data.ByteString.UTF8 as BU
+
+import Github.Api
 
 data UserConfig = UserConfig {
     absRootPath :: String,
-    githubToken :: String
+    githubToken :: String,
+    githubUsername :: String
 } deriving (Generic, Show)
 
 instance ToJSON UserConfig
 instance FromJSON UserConfig
-
--- Parse command line input
-userConfig :: Parser UserConfig
-userConfig = UserConfig
-          <$> option parseRoot
-            (long "root"
-            <> short 'r'
-            <> metavar "dir"
-            <> help "Root directory for all repositories")
-          <*> strOption
-            (long "token"
-            <> short 't'
-            <> metavar "Github token"
-            <> help "We need your github token to query github api")
-
-parseRoot :: ReadM String
-parseRoot = eitherReader parseAbsDir
-
-parseAbsDir :: FilePath -> Either String String
-parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f
 
 -- Process command
 
 config_dir = "hh"
 config_file = "config.json"
 
-saveConfig :: UserConfig -> IO ()
-saveConfig config@(UserConfig root token) = do
+saveConfig :: String -> String -> IO ()
+saveConfig root token = do
   confPath <- userConfigPath config_dir config_file
   print confPath
   createDirectoryIfMissing True root
-  saveConfigWithPath confPath config
+  either <- validateToken token
+  case either of
+    Left(err) -> throwString $ "Failed to verify token: " <> token <> " because of: " <> err
+    Right(name) -> saveConfigWithPath confPath $ UserConfig {absRootPath = root
+                                                            , githubToken = token
+                                                            , githubUsername = name}
 
 showConfig :: IO ()
 showConfig = do
@@ -87,3 +73,9 @@ userConfigPath path name = do
 
 configDir :: String -> IO FilePath
 configDir = getXdgDirectory XdgConfig
+
+validateToken :: String -> IO (Either String String)
+validateToken token = do
+  username <- fetchUsername $ BU.fromString token
+  print $ show username
+  pure $ fmap unpack username

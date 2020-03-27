@@ -32,6 +32,9 @@ dependencies:
 - aeson
 - safe-exceptions
 - filepath
+- morpheus-graphql
+- req >= 3.1.0
+- utf8-string
 
 default-extensions:
 - OverloadedStrings
