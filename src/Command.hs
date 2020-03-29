@@ -7,16 +7,19 @@ module Command
   where
 
 import Data.Aeson
+import Data.Bifunctor (bimap)
+import Data.Text
 import Options.Applicative
 import qualified Path as P
 import UserConfig
-import Data.Bifunctor (bimap)
 
-data Command = Init {
-                    absRootPath :: String
-                    , githubToken :: String }
-             | ShowConfig
-  deriving (Show)
+data Command =
+    ShowConfig
+  | Init { root :: Text
+         , token :: Text
+         }
+  | ShowRepo { org :: Text }
+    deriving (Show)
 
 commands :: Parser Command
 commands = hsubparser
@@ -30,7 +33,21 @@ commands = hsubparser
           (info (pure ShowConfig)
                 (progDesc "Show your configuration")
           )
+
+    <> command
+          "show-repos"
+          (info showRepoCommand
+                (progDesc "Show all repos in an organization")
+          )
     )
+
+showRepoCommand :: Parser Command
+showRepoCommand = ShowRepo
+               <$> strOption
+                (long "org"
+                <> short 'o'
+                <> metavar "name"
+                <> help "Organization name")
 
 initCommand :: Parser Command
 initCommand = Init
@@ -45,8 +62,8 @@ initCommand = Init
             <> metavar "Github token"
             <> help "We need your github token to query github api")
 
-parseRoot :: ReadM String
-parseRoot = eitherReader parseAbsDir
+parseRoot :: ReadM Text
+parseRoot = fmap pack $ eitherReader parseAbsDir
 
 parseAbsDir :: FilePath -> Either String String
 parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f

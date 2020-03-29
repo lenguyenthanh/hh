@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 35e4f0c4698e8c590f5841669500b1d9d6a4b87835ee5997efd3bd98463e56b9
+-- hash: 544fed8a9f5b6a9d09fdd25e867b38de091e55a58b43c2da27ef15214a1b0f94
 
 name:           hh
 version:        0.1.0.0
@@ -44,6 +44,7 @@ library
     , errors
     , exceptions
     , filepath
+    , lens
     , morpheus-graphql
     , mtl
     , optparse-applicative
@@ -51,7 +52,6 @@ library
     , req >=3.1.0
     , safe-exceptions
     , text
-    , utf8-string
   default-language: Haskell2010
 
 executable hh
@@ -71,6 +71,7 @@ executable hh
     , exceptions
     , filepath
     , hh
+    , lens
     , morpheus-graphql
     , mtl
     , optparse-applicative
@@ -78,7 +79,6 @@ executable hh
     , req >=3.1.0
     , safe-exceptions
     , text
-    , utf8-string
   default-language: Haskell2010
 
 test-suite hh-test
@@ -99,6 +99,7 @@ test-suite hh-test
     , exceptions
     , filepath
     , hh
+    , lens
     , morpheus-graphql
     , mtl
     , optparse-applicative
@@ -106,5 +107,4 @@ test-suite hh-test
     , req >=3.1.0
     , safe-exceptions
     , text
-    , utf8-string
   default-language: Haskell2010

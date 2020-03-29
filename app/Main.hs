@@ -1,11 +1,14 @@
 {-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Main where
 
 import Command
+import Data.Text
+import Data.Text.Encoding (encodeUtf8)
+import Github.Api (OrgRepos, fetchRepositories)
 import Options.Applicative
-import UserConfig (saveConfig, showConfig)
+import UserConfig (UserConfig(..), getConfig, saveConfig, showConfig)
 
 hhProgDes = "Git multirepo maintenance tool"
 hhHeader = "HH - Git from distance"
@@ -20,10 +23,19 @@ main = runCommand =<< execParser opts
         <> header hhHeader)
 
 runCommand :: Command -> IO ()
-runCommand (Init {absRootPath, githubToken}) = saveConfig absRootPath githubToken
+runCommand (Init {..}) = saveConfig root token
 runCommand ShowConfig = showConfig
+runCommand (ShowRepo { org }) = showRepo org
 
 versionOption :: Parser (a -> a)
 versionOption = infoOption
     ("hh version " <> hhVersion)
     (short 'v' <> long "version" <> help "Show the program version" <> hidden)
+
+showRepo :: Text -> IO ()
+showRepo org = do
+  config <- getConfig
+  response <- fetchRepositories org (encodeUtf8 $ githubToken config)
+  case response of
+    Left err -> print .unpack $ "Error " <> err
+    Right repos -> mapM_ (print.show) repos
