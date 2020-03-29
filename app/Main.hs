@@ -3,10 +3,11 @@
 
 module Main where
 
+import Control.Lens
 import Command
 import Data.Text
 import Data.Text.Encoding (encodeUtf8)
-import Github.Api (OrgRepos, fetchRepositories)
+import qualified Github.Api as GH
 import Options.Applicative
 import UserConfig (UserConfig(..), getConfig, saveConfig, showConfig)
 
@@ -25,17 +26,21 @@ main = runCommand =<< execParser opts
 runCommand :: Command -> IO ()
 runCommand (Init {..}) = saveConfig root token
 runCommand ShowConfig = showConfig
-runCommand (ShowRepo { org }) = showRepo org
+runCommand (ShowRepo { org }) = showRepos org
 
 versionOption :: Parser (a -> a)
 versionOption = infoOption
     ("hh version " <> hhVersion)
     (short 'v' <> long "version" <> help "Show the program version" <> hidden)
 
-showRepo :: Text -> IO ()
-showRepo org = do
+showRepos :: Text -> IO ()
+showRepos org = do
   config <- getConfig
-  response <- fetchRepositories org (encodeUtf8 $ githubToken config)
+  response <- GH.fetchOrgRepos org (encodeUtf8 $ githubToken config)
   case response of
     Left err -> print .unpack $ "Error " <> err
-    Right repos -> mapM_ (print.show) repos
+    Right repos -> mapM_ showRepo repos
+
+showRepo :: GH.RemoteRepo -> IO ()
+showRepo repo = print $
+  "Repo name: " <> repo^.GH.name <> ", url: " <> repo^.GH.url

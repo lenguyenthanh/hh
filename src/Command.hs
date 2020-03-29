@@ -6,12 +6,10 @@ module Command
     )
   where
 
-import Data.Aeson
 import Data.Bifunctor (bimap)
 import Data.Text
 import Options.Applicative
 import qualified Path as P
-import UserConfig
 
 data Command =
     ShowConfig

@@ -79,9 +79,6 @@ userConfigPath = userConfigPath' config_dir config_file
       createDirectoryIfMissing True dir
       pure $ dir </> name
 
-configDir :: String -> IO FilePath
-configDir = getXdgDirectory XdgConfig
-
 validateToken :: Text -> IO (Either Text Text)
 validateToken token = do
   username <- fetchUsername $ encodeUtf8 token
