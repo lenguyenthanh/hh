@@ -65,4 +65,3 @@ parseRoot = fmap pack $ eitherReader parseAbsDir
 
 parseAbsDir :: FilePath -> Either String String
 parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f
-

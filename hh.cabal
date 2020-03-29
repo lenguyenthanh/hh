@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 81d31cba2b455a1b833f6b3f0ce2f654bb5411663121fd8513023944277efa97
+-- hash: 6935b0e90bcfb00ac537f3e1312e5b27209c193da33951857550758dbe050abc
 
 name:           hh
 version:        0.1.0.0
@@ -29,7 +29,7 @@ library
   exposed-modules:
       Command
       Github.Api
-      Github.GraphQl
+      Github.Internal.GraphQl
       Lib
       UserConfig
   other-modules:

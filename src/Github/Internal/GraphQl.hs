@@ -14,6 +14,7 @@ module Github.Internal.GraphQl
     )
   where
 
+import Control.Error.Util (hush)
 import Data.Morpheus.Client (Fetch(..), defineByDocumentFile, gql)
 import Data.Morpheus.Types (ScalarValue(..))
 import Data.Text (Text, pack, unpack)
@@ -36,10 +37,10 @@ defineByDocumentFile
 defineByDocumentFile
   "assets/github.graphql"
   [gql|
-    query OrgRepos ($login: String!, $count: Int!)
+    query OrgRepos ($login: String!, $count: Int!, $after: String)
     {
       organization(login: $login) {
-        repositories(first: $count) {
+        repositories(first: $count, after: $after) {
           totalCount
           nodes{
             name,
@@ -59,18 +60,37 @@ defineByDocumentFile
 type Repository = OrganizationRepositoriesNodesRepository
 
 fetchRepositories :: Text -> BS.ByteString -> IO (Either Text [Repository])
-fetchRepositories login token = do
+fetchRepositories login token = fetchRepositories' login token Nothing
+
+fetchRepositories' :: Text -> BS.ByteString -> Maybe Text -> IO (Either Text [Repository])
+fetchRepositories' login token after = do
   response <- fetch (resolver token) args
-  pure $ first pack response >>= repos
+  let res = first pack response
+  let pageInfo = hush res >>= getPageInfo
+  let list = res >>= repos
+  case pageInfo of
+    Just info ->
+      if hasNextPage info
+         then do
+            rec <- fetchRepositories' login token (endCursor info)
+            pure $ mappend <$> list <*> rec
+         else pure list
+    Nothing -> pure list
   where
     args = OrgReposArgs { orgReposArgsLogin = unpack login
-                        , orgReposArgsCount = 10 }
+                        , orgReposArgsCount = 10
+                        , orgReposArgsAfter = fmap unpack after
+                        }
 
-repos :: OrgRepos -> Either Text [OrganizationRepositoriesNodesRepository]
+repos :: OrgRepos -> Either Text [Repository]
 repos org = justErr "Invalid Response" repos
   where
-    repos = organization org >>= nodes .repositories
+    repos = organization org >>= nodes.repositories
                              >>= sequence
+
+getPageInfo :: OrgRepos -> Maybe OrganizationRepositoriesPageInfoPageInfo
+getPageInfo org = fmap (pageInfo.repositories) $ organization org
+
 fetchUsername :: BS.ByteString -> IO (Either Text Text)
 fetchUsername token = do
   login <- fetchLogin token
