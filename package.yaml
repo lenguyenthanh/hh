@@ -32,7 +32,7 @@ dependencies:
 - aeson
 - safe-exceptions
 - filepath
-- morpheus-graphql
+- morpheus-graphql >= 0.10.0
 - req >= 3.1.0
 - lens
 - regex-tdfa

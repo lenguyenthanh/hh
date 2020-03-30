@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 44f0e8289dcad09267eb18320aff77de6fee4fcd2709b148ffc2e264551f0efb
+-- hash: 067e58a18f53596ff877de6bfe9e4c05d45b01dde617c3e8a39f7d332e6cc111
 
 name:           hh
 version:        0.1.0.0
@@ -28,6 +28,9 @@ source-repository head
 library
   exposed-modules:
       Command
+      Command.InitConfig
+      Command.Internal.Common
+      Command.Internal.Parser
       Command.ShowRepo
       Github.Api
       Github.Internal.GraphQl
@@ -47,7 +50,7 @@ library
     , exceptions
     , filepath
     , lens
-    , morpheus-graphql
+    , morpheus-graphql >=0.10.0
     , mtl
     , optparse-applicative
     , path
@@ -76,7 +79,7 @@ executable hh
     , filepath
     , hh
     , lens
-    , morpheus-graphql
+    , morpheus-graphql >=0.10.0
     , mtl
     , optparse-applicative
     , path
@@ -106,7 +109,7 @@ test-suite hh-test
     , filepath
     , hh
     , lens
-    , morpheus-graphql
+    , morpheus-graphql >=0.10.0
     , mtl
     , optparse-applicative
     , path
