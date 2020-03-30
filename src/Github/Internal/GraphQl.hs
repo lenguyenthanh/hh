@@ -14,15 +14,16 @@ module Github.Internal.GraphQl
     )
   where
 
+import Control.Monad ((<=<))
+import Control.Error.Safe (justErr)
 import Control.Error.Util (hush)
+import Data.Bifunctor (bimap, first)
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy.Char8 as BL
 import Data.Morpheus.Client (Fetch(..), defineByDocumentFile, gql)
 import Data.Morpheus.Types (ScalarValue(..))
 import Data.Text (Text, pack, unpack)
 import Network.HTTP.Req
-import Control.Error.Safe (justErr)
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy.Char8 as BL
-import Data.Bifunctor (bimap, first)
 
 defineByDocumentFile
   "assets/github.graphql"
@@ -67,7 +68,7 @@ fetchRepositories' login token after = do
   response <- fetch (resolver token) args
   let res = first pack response
   let pageInfo = hush res >>= getPageInfo
-  let list = res >>= repos
+  let list = res >>= getRepos
   case pageInfo of
     Just info ->
       if hasNextPage info
@@ -82,14 +83,12 @@ fetchRepositories' login token after = do
                         , orgReposArgsAfter = fmap unpack after
                         }
 
-repos :: OrgRepos -> Either Text [Repository]
-repos org = justErr "Invalid Response" repos
-  where
-    repos = organization org >>= nodes.repositories
-                             >>= sequence
+getRepos :: OrgRepos -> Either Text [Repository]
+getRepos = justErr "Invalid Response" .
+  (sequenceA <=< nodes.repositories <=< organization)
 
 getPageInfo :: OrgRepos -> Maybe OrganizationRepositoriesPageInfoPageInfo
-getPageInfo org = fmap (pageInfo.repositories) $ organization org
+getPageInfo = pure.pageInfo.repositories <=< organization
 
 fetchUsername :: BS.ByteString -> IO (Either Text Text)
 fetchUsername token = do

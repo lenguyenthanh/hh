@@ -35,12 +35,11 @@ fetchOrgRepos org token = do
   pure $ response >>= (justErr "Invalid Response") . sequence . (fmap toRemoteRepo)
 
 toRemoteRepo :: GQL.Repository -> Maybe RemoteRepo
-toRemoteRepo repo = do
-  let name = GQL.name repo
-  let nameWithOwner = GQL.nameWithOwner repo
-  sshUrl <- scalarToText. GQL.sshUrl $ repo
-  url <- scalarToText. GQL.url $ repo
-  pure $ RemoteRepo name sshUrl nameWithOwner url
+toRemoteRepo repo = RemoteRepo
+                  <$> (Just $ GQL.name repo)
+                  <*> (scalarToText $ GQL.sshUrl repo)
+                  <*> (Just $ GQL.nameWithOwner repo)
+                  <*> (scalarToText $ GQL.url repo)
 
 scalarToText :: M.ScalarValue -> Maybe Text
 scalarToText (M.String t) = Just t

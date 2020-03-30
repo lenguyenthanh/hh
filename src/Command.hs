@@ -41,24 +41,24 @@ commands = hsubparser
 
 showRepoCommand :: Parser Command
 showRepoCommand = ShowRepo
-               <$> strOption
-                (long "org"
-                <> short 'o'
-                <> metavar "name"
-                <> help "Organization name")
+               <$> organizationOption
 
 initCommand :: Parser Command
 initCommand = Init
-          <$> option parseRoot
-            (long "root"
-            <> short 'r'
-            <> metavar "dir"
-            <> help "Root directory for all repositories")
-          <*> strOption
-            (long "token"
-            <> short 't'
-            <> metavar "Github token"
-            <> help "We need your github token to query github api")
+          <$> rootOption
+          <*> tokenOption
+
+rootOption :: Parser Text
+rootOption = option parseRoot
+    (long "root" <> metavar "<dir>" <> help "Root directory for all repositories")
+
+tokenOption :: Parser Text
+tokenOption = strOption
+    (long "token" <> short 't' <> metavar "Github token" <> help "We need your github token to query github api")
+
+organizationOption :: Parser Text
+organizationOption = strOption
+    (long "org" <> short 'o' <> metavar "name" <> help "Organization name")
 
 parseRoot :: ReadM Text
 parseRoot = fmap pack $ eitherReader parseAbsDir

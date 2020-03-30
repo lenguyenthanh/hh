@@ -9,7 +9,7 @@ import Data.Text
 import Data.Text.Encoding (encodeUtf8)
 import qualified Github.Api as GH
 import Options.Applicative
-import UserConfig (UserConfig(..), getConfig, saveConfig, showConfig)
+import UserConfig
 
 hhProgDes = "Git multirepo maintenance tool"
 hhHeader = "HH - Git from distance"
@@ -36,7 +36,7 @@ versionOption = infoOption
 showRepos :: Text -> IO ()
 showRepos org = do
   config <- getConfig
-  response <- GH.fetchOrgRepos org (encodeUtf8 $ githubToken config)
+  response <- GH.fetchOrgRepos org (encodeUtf8 $ config^.githubToken)
   case response of
     Left err -> print .unpack $ "Error " <> err
     Right repos -> mapM_ showRepo repos
