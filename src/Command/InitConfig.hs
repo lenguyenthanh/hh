@@ -9,7 +9,6 @@ module Command.InitConfig
   where
 
 import Command.Internal.Path
-import Control.Exception.Safe
 import Control.Lens
 import Data.Text (Text, pack, unpack)
 import Data.Text.Encoding (encodeUtf8)
@@ -18,6 +17,7 @@ import Options.Applicative
 import qualified Path as P
 import qualified System.Directory as D
 import qualified UserConfig as U
+import Util
 
 data InitArgs =
   InitArgs { root :: Text
@@ -52,7 +52,7 @@ saveConfig InitArgs {..} = do
   D.createDirectoryIfMissing True $ unpack root
   either <- validateToken token
   case either of
-    Left(err) -> throwString . unpack $ "Failed to verify token: " <> token <> " because of: " <> err
+    Left(err) -> throwText $ "Failed to verify token: " <> token <> " because of: " <> err
     Right(name) -> U.saveConfig confPath $ U.UserConfig { _absRootPath = root
                                                         , _githubToken = token
                                                         , _githubUsername = name
