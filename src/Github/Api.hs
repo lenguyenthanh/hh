@@ -6,6 +6,7 @@ module Github.Api
     , sshUrl
     , nameWithOwner
     , url
+    , httpsUrl
     , fetchOrgRepos
     , GQL.fetchUsername
     )
@@ -44,3 +45,10 @@ toRemoteRepo repo = RemoteRepo
 scalarToText :: M.ScalarValue -> Maybe Text
 scalarToText (M.String t) = Just t
 scalarToText x = Nothing
+
+httpsUrl :: Lens' RemoteRepo Text
+httpsUrl = lens getter setter
+  where
+    getter = (<> ".git") <$> _url
+    setter repo text =
+      repo {_url = text }

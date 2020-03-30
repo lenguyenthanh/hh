@@ -1,23 +1,20 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Command.ShowRepo
+module Command.ShowRepos
     ( ShowRepArgs(..)
     , showRepoArgsParser
     , showRepos
     )
   where
 
-import Command.Internal.Path
 import Command.Internal.Common
 import Command.Internal.Parser
 import Control.Lens
 import Data.Text (Text)
-import Data.Text.Encoding (encodeUtf8)
 import Data.Text.IO (putStr)
-import qualified Github.Api as GH
 import Options.Applicative
 import Prelude hiding (putStr)
-import UserConfig
+import Github.Api
 
 data ShowRepArgs =
   ShowRepArgs { org :: Text
@@ -32,13 +29,11 @@ showRepoArgsParser = ShowRepArgs
 
 showRepos :: ShowRepArgs -> IO ()
 showRepos (ShowRepArgs {..}) = do
-  path <- userConfigPath
-  config <- getConfig path
-  response <- GH.fetchOrgRepos org (encodeUtf8 $ config^.githubToken)
+  response <- fetchAndFilterRepos org regex
   case response of
-    Right repos -> mapM_ showRepo $ filterRepos regex repos
+    Right repos -> mapM_ showRepo repos
     Left err -> putStr $ "Error " <> err
 
-showRepo :: GH.RemoteRepo -> IO ()
+showRepo :: RemoteRepo -> IO ()
 showRepo repo = print $
-  "Repo name: " <> repo^.GH.name <> ", url: " <> repo^.GH.url
+  "Repo name: " <> repo^.name <> ", url: " <> repo^.url

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 067e58a18f53596ff877de6bfe9e4c05d45b01dde617c3e8a39f7d332e6cc111
+-- hash: 5fd35ba998be264dd19b0e511144cc0f3bbb61467a2786d3f83827ac1d3d942d
 
 name:           hh
 version:        0.1.0.0
@@ -28,14 +28,16 @@ source-repository head
 library
   exposed-modules:
       Command
+      Command.CloneRepos
       Command.InitConfig
       Command.Internal.Common
       Command.Internal.Parser
-      Command.ShowRepo
+      Command.ShowRepos
+      Git
       Github.Api
       Github.Internal.GraphQl
-      Lib
       UserConfig
+      Util
   other-modules:
       Paths_hh
   hs-source-dirs:
@@ -58,6 +60,7 @@ library
     , regex-tdfa-text
     , req >=3.1.0
     , safe-exceptions
+    , shellmet
     , text
   default-language: Haskell2010
 
@@ -87,6 +90,7 @@ executable hh
     , regex-tdfa-text
     , req >=3.1.0
     , safe-exceptions
+    , shellmet
     , text
   default-language: Haskell2010
 
@@ -117,5 +121,6 @@ test-suite hh-test
     , regex-tdfa-text
     , req >=3.1.0
     , safe-exceptions
+    , shellmet
     , text
   default-language: Haskell2010

@@ -8,7 +8,6 @@ module Command.InitConfig
     )
   where
 
-import Command.Internal.Path
 import Control.Lens
 import Data.Text (Text, pack, unpack)
 import Data.Text.Encoding (encodeUtf8)
@@ -48,21 +47,17 @@ parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f
 
 saveConfig :: InitArgs -> IO ()
 saveConfig InitArgs {..} = do
-  confPath <- userConfigPath
   D.createDirectoryIfMissing True $ unpack root
   either <- validateToken token
   case either of
     Left(err) -> throwText $ "Failed to verify token: " <> token <> " because of: " <> err
-    Right(name) -> U.saveConfig confPath $ U.UserConfig { _absRootPath = root
+    Right(name) -> U.saveConfig $ U.UserConfig { _absRootPath = root
                                                         , _githubToken = token
                                                         , _githubUsername = name
                                                         }
 
 showConfig :: IO ()
-showConfig = do
-  path <- userConfigPath
-  config <- U.getConfig path
-  print $ show config
+showConfig = U.getConfig >>= print.show
 
 validateToken :: Text -> IO (Either Text Text)
 validateToken = fetchUsername . encodeUtf8

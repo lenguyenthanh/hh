@@ -5,8 +5,9 @@ module Main where
 
 import Command
 import Options.Applicative
-import Command.ShowRepo (showRepos)
+import Command.ShowRepos (showRepos)
 import Command.InitConfig (saveConfig, showConfig)
+import Command.CloneRepos (cloneRepos)
 
 hhProgDes = "Git multirepo maintenance tool"
 hhHeader = "HH - Git from distance"
@@ -23,7 +24,8 @@ main = runCommand =<< execParser opts
 runCommand :: Command -> IO ()
 runCommand (Init args) = saveConfig args
 runCommand ShowConfig = showConfig
-runCommand (ShowRepo args) = showRepos args
+runCommand (ShowRepos args) = showRepos args
+runCommand (CloneRepos args) = cloneRepos args
 
 versionOption :: Parser (a -> a)
 versionOption = infoOption

@@ -6,14 +6,16 @@ module Command
     )
   where
 
+import Command.CloneRepos
 import Command.InitConfig
-import Command.ShowRepo
+import Command.ShowRepos
 import Options.Applicative
 
 data Command =
     ShowConfig
   | Init InitArgs
-  | ShowRepo ShowRepArgs
+  | ShowRepos ShowRepArgs
+  | CloneRepos CloneReposArgs
     deriving (Show)
 
 commands :: Parser Command
@@ -28,17 +30,23 @@ commands = hsubparser
           (info (pure ShowConfig)
                 (progDesc "Show your configuration")
           )
-
     <> command
           "show-repos"
           (info showRepoCommand
-                (progDesc "Show all repos in an organization")
+                (progDesc "Show all repos in an organization that maches a regex")
+          )
+    <> command
+          "clone-repos"
+          (info cloneReposCommand
+                (progDesc "Clone all repos in an organization that matches a regex")
           )
     )
 
 showRepoCommand :: Parser Command
-showRepoCommand = ShowRepo <$> showRepoArgsParser
+showRepoCommand = ShowRepos <$> showRepoArgsParser
 
 initCommand :: Parser Command
 initCommand = Init <$> initArgsParser
 
+cloneReposCommand :: Parser Command
+cloneReposCommand = CloneRepos <$> cloneReposArgsParser

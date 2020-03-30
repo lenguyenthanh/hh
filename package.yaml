@@ -37,6 +37,7 @@ dependencies:
 - lens
 - regex-tdfa
 - regex-tdfa-text
+- shellmet
 
 default-extensions:
 - OverloadedStrings
