@@ -35,6 +35,8 @@ dependencies:
 - morpheus-graphql
 - req >= 3.1.0
 - lens
+- regex-tdfa
+- regex-tdfa-text
 
 default-extensions:
 - OverloadedStrings

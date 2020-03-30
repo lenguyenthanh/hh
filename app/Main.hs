@@ -3,12 +3,14 @@
 
 module Main where
 
-import Control.Lens
 import Command
-import Data.Text
+import Control.Lens
+import Data.Text (Text, unpack)
 import Data.Text.Encoding (encodeUtf8)
 import qualified Github.Api as GH
 import Options.Applicative
+import Text.Regex.TDFA
+import Text.Regex.TDFA.Text
 import UserConfig
 
 hhProgDes = "Git multirepo maintenance tool"
@@ -26,20 +28,24 @@ main = runCommand =<< execParser opts
 runCommand :: Command -> IO ()
 runCommand (Init {..}) = saveConfig root token
 runCommand ShowConfig = showConfig
-runCommand (ShowRepo { org }) = showRepos org
+runCommand (ShowRepo {..}) = showRepos org regex
 
 versionOption :: Parser (a -> a)
 versionOption = infoOption
     ("hh version " <> hhVersion)
     (short 'v' <> long "version" <> help "Show the program version" <> hidden)
 
-showRepos :: Text -> IO ()
-showRepos org = do
+showRepos :: Text -> Maybe Text -> IO ()
+showRepos org regex = do
   config <- getConfig
   response <- GH.fetchOrgRepos org (encodeUtf8 $ config^.githubToken)
   case response of
+    Right repos -> mapM_ showRepo $ filterRepos regex repos
     Left err -> print .unpack $ "Error " <> err
-    Right repos -> mapM_ showRepo repos
+
+filterRepos :: (Maybe Text) -> [GH.RemoteRepo] -> [GH.RemoteRepo]
+filterRepos Nothing x = x
+filterRepos (Just regex) xs = filter (\x -> (x^.GH.name) =~ regex :: Bool) xs
 
 showRepo :: GH.RemoteRepo -> IO ()
 showRepo repo = print $

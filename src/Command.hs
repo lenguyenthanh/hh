@@ -16,7 +16,9 @@ data Command =
   | Init { root :: Text
          , token :: Text
          }
-  | ShowRepo { org :: Text }
+  | ShowRepo { org :: Text
+             , regex :: Maybe Text
+             }
     deriving (Show)
 
 commands :: Parser Command
@@ -42,6 +44,7 @@ commands = hsubparser
 showRepoCommand :: Parser Command
 showRepoCommand = ShowRepo
                <$> organizationOption
+               <*> optional regexOption
 
 initCommand :: Parser Command
 initCommand = Init
@@ -50,7 +53,7 @@ initCommand = Init
 
 rootOption :: Parser Text
 rootOption = option parseRoot
-    (long "root" <> metavar "<dir>" <> help "Root directory for all repositories")
+    (long "root" <> short 'r' <> metavar "<dir>" <> help "Root directory for all repositories")
 
 tokenOption :: Parser Text
 tokenOption = strOption
@@ -59,6 +62,10 @@ tokenOption = strOption
 organizationOption :: Parser Text
 organizationOption = strOption
     (long "org" <> short 'o' <> metavar "name" <> help "Organization name")
+
+regexOption :: Parser Text
+regexOption = strOption
+    (long "regex" <> short 'r' <> metavar "regular expression" <> help "Regular expression to filter repositories")
 
 parseRoot :: ReadM Text
 parseRoot = fmap pack $ eitherReader parseAbsDir

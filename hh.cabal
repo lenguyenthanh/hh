@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6935b0e90bcfb00ac537f3e1312e5b27209c193da33951857550758dbe050abc
+-- hash: 44f0e8289dcad09267eb18320aff77de6fee4fcd2709b148ffc2e264551f0efb
 
 name:           hh
 version:        0.1.0.0
@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
       Command
+      Command.ShowRepo
       Github.Api
       Github.Internal.GraphQl
       Lib
@@ -50,6 +51,8 @@ library
     , mtl
     , optparse-applicative
     , path
+    , regex-tdfa
+    , regex-tdfa-text
     , req >=3.1.0
     , safe-exceptions
     , text
@@ -77,6 +80,8 @@ executable hh
     , mtl
     , optparse-applicative
     , path
+    , regex-tdfa
+    , regex-tdfa-text
     , req >=3.1.0
     , safe-exceptions
     , text
@@ -105,6 +110,8 @@ test-suite hh-test
     , mtl
     , optparse-applicative
     , path
+    , regex-tdfa
+    , regex-tdfa-text
     , req >=3.1.0
     , safe-exceptions
     , text
