@@ -8,6 +8,7 @@ import Options.Applicative
 import Command.ShowRepos (showRepos)
 import Command.InitConfig (saveConfig, showConfig)
 import Command.CloneRepos (cloneRepos)
+import Command.CreateBranch (createBranch)
 
 hhProgDes = "Git multirepo maintenance tool"
 hhHeader = "HH - Git from distance"
@@ -26,6 +27,7 @@ runCommand (Init args) = saveConfig args
 runCommand ShowConfig = showConfig
 runCommand (ShowRepos args) = showRepos args
 runCommand (CloneRepos args) = cloneRepos args
+runCommand (CreateBranch args) = createBranch args
 
 versionOption :: Parser (a -> a)
 versionOption = infoOption

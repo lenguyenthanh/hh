@@ -24,8 +24,8 @@ data ShowRepArgs =
 
 showRepoArgsParser :: Parser ShowRepArgs
 showRepoArgsParser = ShowRepArgs
-               <$> organizationOption
-               <*> optional regexOption
+               <$> organizationParser
+               <*> optional regexParser
 
 showRepos :: ShowRepArgs -> IO ()
 showRepos (ShowRepArgs {..}) = do

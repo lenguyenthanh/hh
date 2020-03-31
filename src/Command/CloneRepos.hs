@@ -11,11 +11,11 @@ import Command.Internal.Common
 import Command.Internal.Parser
 import Control.Lens
 import Data.Text (Text)
-import Data.Text.IO (putStr)
-import Options.Applicative
-import Prelude hiding (putStr)
-import Github.Api
+import Data.Text.IO (putStrLn)
 import Git (clone)
+import Github.Api
+import Options.Applicative
+import Prelude hiding (putStrLn)
 import UserConfig
 
 data CloneReposArgs =
@@ -26,25 +26,23 @@ data CloneReposArgs =
 
 cloneReposArgsParser :: Parser CloneReposArgs
 cloneReposArgsParser = CloneReposArgs
-               <$> organizationOption
-               <*> optional regexOption
+               <$> organizationParser
+               <*> optional regexParser
                <*> useHttpsParser
-
-useHttpsParser :: Parser Bool
-useHttpsParser = switch
-    (long "use-https" <> short 'u' <>  help "Clone by https, default is ssh")
 
 cloneRepos :: CloneReposArgs -> IO ()
 cloneRepos (CloneReposArgs {..}) = do
   response <- fetchAndFilterRepos org regex
   case response of
     Right repos -> mapM_ (cloneRepo useHttps) repos
-    Left err -> putStr $ "Error " <> err
+    Left err -> putStrLn $ "Error " <> err
 
 cloneRepo :: Bool -> RemoteRepo -> IO ()
 cloneRepo useHttps repo = do
-  config <- getConfig
-  clone url $ config^.absRootPath <> repo^.nameWithOwner
+  conf <- getConfig
+  let path = concatPath [conf^.absRootPath, repo^.nameWithOwner]
+  _ <- clone url path
+  putStrLn $ "Cloned " <> repo^.name <> " success"
   where
     url = if useHttps
             then repo^.httpsUrl
