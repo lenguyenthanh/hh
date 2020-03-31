@@ -52,9 +52,9 @@ saveConfig InitArgs {..} = do
   case either of
     Left(err) -> throwText $ "Failed to verify token: " <> token <> " because of: " <> err
     Right(name) -> U.saveConfig $ U.UserConfig { _absRootPath = root
-                                                        , _githubToken = token
-                                                        , _githubUsername = name
-                                                        }
+                                               , _githubToken = token
+                                               , _githubUsername = name
+                                               }
 
 showConfig :: IO ()
 showConfig = U.getConfig >>= print.show

@@ -9,9 +9,11 @@ module Github.Api
     , httpsUrl
     , fetchOrgRepos
     , GQL.fetchUsername
+    , Rest.createTeam
     )
   where
 
+import qualified Github.Internal.Rest as Rest
 import Control.Error.Safe (justErr)
 import Control.Lens
 import qualified Data.ByteString as BS

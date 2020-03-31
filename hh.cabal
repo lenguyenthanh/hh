@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5ac73a44dc1dec5ab020b73dc5248cde21ae5a0ec4972da2fcbb56d0d78aa834
+-- hash: ef469a54305e90dd425caea90949e3d7eb770cc0ee32057ede43a26e8d716fd6
 
 name:           hh
 version:        0.1.0.0
@@ -29,7 +29,9 @@ library
   exposed-modules:
       Command
       Command.CloneRepos
+      Command.Create
       Command.CreateBranch
+      Command.CreateTeam
       Command.InitConfig
       Command.Internal.Common
       Command.Internal.Parser
@@ -37,6 +39,7 @@ library
       Git
       Github.Api
       Github.Internal.GraphQl
+      Github.Internal.Rest
       UserConfig
       Util
   other-modules:
