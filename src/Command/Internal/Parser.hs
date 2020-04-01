@@ -34,4 +34,3 @@ baseBranchParser = strOption
     <> showDefault
     <> metavar "branch"
     <> help "The branch which you want to base off")
-

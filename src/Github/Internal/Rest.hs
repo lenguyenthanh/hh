@@ -16,9 +16,7 @@ import Data.Text.Encoding (encodeUtf8)
 
 createTeam :: Text -> Text -> Maybe Text -> [Text] -> Text -> Text -> IO CreateTeamResponse
 createTeam org team des users privacy token = runReq defaultHttpConfig $ do
-    let hs = header "Content-Type" "application/vnd.github.v3+json"
-             <> header "User-Agent" "hh"
-             <> oAuth2Bearer (encodeUtf8 token)
+    let hs = headers token
     let body = CreateTeamBody { name = team
                               , description = des
                               , maintainers = users
@@ -52,3 +50,7 @@ instance ToJSON CreateTeamResponse
 instance FromJSON CreateTeamResponse where
   parseJSON = genericParseJSON
       defaultOptions { fieldLabelModifier = camelTo2 '_' }
+
+headers token = header "Content-Type" "application/vnd.github.v3+json"
+              <> header "User-Agent" "hh"
+              <> oAuth2Bearer (encodeUtf8 token)
