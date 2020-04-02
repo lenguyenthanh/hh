@@ -3,18 +3,17 @@
 module Command.ShowRepos
     ( ShowRepArgs(..)
     , showRepoArgsParser
-    , showRepos
+    , runShowRepos
     )
   where
 
 import Command.Internal.Common
 import Command.Internal.Parser
-import Control.Lens
 import Data.Text (Text)
-import Data.Text.IO (putStr)
+import Effect.Config
+import Effect.Console
+import Effect.Github
 import Options.Applicative
-import Prelude hiding (putStr)
-import Github.Api
 
 data ShowRepArgs =
   ShowRepArgs { org :: Text
@@ -27,13 +26,13 @@ showRepoArgsParser = ShowRepArgs
                <$> organizationParser
                <*> optional regexParser
 
-showRepos :: ShowRepArgs -> IO ()
-showRepos (ShowRepArgs {..}) = do
+runShowRepos :: (MonadConfig m, MonadConsole m, MonadGithub m) => ShowRepArgs -> m ()
+runShowRepos (ShowRepArgs {..}) = do
   response <- fetchAndFilterRepos org regex
   case response of
     Right repos -> mapM_ showRepo repos
-    Left err -> putStr $ "Error " <> err
+    Left err -> printLn $ "Error " <> err
 
-showRepo :: RemoteRepo -> IO ()
-showRepo repo = print $
-  "Repo name: " <> repo^.name <> ", url: " <> repo^.url
+showRepo :: (MonadConsole m) => RemoteRepo -> m ()
+showRepo repo = printLn $
+  "Repo name: " <> name repo <> ", url: " <> url repo

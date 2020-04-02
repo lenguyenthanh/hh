@@ -3,21 +3,18 @@
 module Command.CreateBranch
     ( CreateBranchArgs(..)
     , createBranchArgsParser
-    , createBranch
+    , runCreateBranch
     )
   where
 
-import Control.Monad (guard)
 import Command.Internal.Common
 import Command.Internal.Parser
-import Control.Lens
 import Data.Text (Text)
-import Data.Text.IO (putStrLn)
-import qualified Git as G
-import Github.Api
+import Effect.Config
+import Effect.Console
+import Effect.Git
+import Effect.Github
 import Options.Applicative
-import Prelude hiding (putStrLn)
-import UserConfig
 
 data CreateBranchArgs =
   CreateBranchArgs { org :: Text
@@ -35,25 +32,24 @@ createBranchArgsParser = CreateBranchArgs
                <*> baseBranchParser
                <*> useHttpsParser
 
-createBranch :: CreateBranchArgs -> IO ()
-createBranch (CreateBranchArgs {..}) = do
+runCreateBranch :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m) => CreateBranchArgs -> m ()
+runCreateBranch (CreateBranchArgs {..}) = do
   response <- fetchAndFilterRepos org regex
   case response of
     Right repos -> mapM_ (mkBranch useHttps newBranch baseBranch) repos
-    Left err -> putStrLn $ "Error " <> err
+    Left err -> printLn $ "Error " <> err
 
-mkBranch :: Bool -> Text -> Text -> RemoteRepo -> IO ()
+mkBranch :: (MonadConfig m, MonadConsole m, MonadGit m) => Bool -> Text -> Text -> RemoteRepo -> m ()
 mkBranch useHttps newBranch baseBranch repo = do
   conf <- getConfig
-  let path = concatPath [conf^.absRootPath, repo^.nameWithOwner]
-  isGitDir <- G.isGitDir path
-  b <- doBranch isGitDir path
-  guard b >> G.pushBranch path newBranch
+  let path = concatPath [absRootPath conf, nameWithOwner repo]
+  isGit <- isGitDir path
+  doBranch isGit path >> pushBranch path newBranch
   where
     url = if useHttps
-            then repo^.httpsUrl
-            else repo^.sshUrl
-    mkBranch' path = G.newBranch path newBranch baseBranch
+            then httpsUrl repo
+            else sshUrl repo
+    mkBranch' path = createNewBranch path newBranch baseBranch
     doBranch isGitDir path = if isGitDir
                               then mkBranch' path
-                              else G.clone path url >> mkBranch' path
+                              else clone path url >> mkBranch' path

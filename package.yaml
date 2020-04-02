@@ -38,6 +38,7 @@ dependencies:
 - regex-tdfa
 - regex-tdfa-text
 - shellmet
+- transformers
 
 default-extensions:
 - OverloadedStrings

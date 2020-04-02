@@ -5,23 +5,23 @@ module Command.Internal.Common
     )
   where
 
-import Data.Text.Encoding (encodeUtf8)
-import Control.Lens
 import Data.Text (Text, pack, unpack)
-import Github.Api
+import Effect.Config
+import Effect.Console
+import Effect.Github
+import System.FilePath ((</>))
 import Text.Regex.TDFA
 import Text.Regex.TDFA.Text
-import UserConfig
-import System.FilePath ((</>))
 
 filterRepos :: Maybe Text -> [RemoteRepo] -> [RemoteRepo]
 filterRepos Nothing x = x
-filterRepos (Just regex) xs = filter (\x -> (x^.name) =~ regex :: Bool) xs
+filterRepos (Just regex) xs = filter (\x -> (name x) =~ regex :: Bool) xs
 
-fetchAndFilterRepos :: Text -> Maybe Text -> IO (Either Text [RemoteRepo])
+fetchAndFilterRepos :: (MonadConfig m, MonadConsole m, MonadGithub m) => Text -> Maybe Text -> m (Either Text [RemoteRepo])
 fetchAndFilterRepos org regex = do
-  config <- getConfig
-  response <- fetchOrgRepos org (encodeUtf8 $ config^.githubToken)
+  conf <- getConfig
+  let token = githubToken conf
+  response <- fetchOrgRepos org token
   pure $ filterRepos regex <$> response
 
 concatPath :: Foldable t => t Text -> Text

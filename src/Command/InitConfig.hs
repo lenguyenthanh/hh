@@ -3,20 +3,20 @@
 module Command.InitConfig
     ( InitArgs
     , initArgsParser
-    , saveConfig
-    , showConfig
+    , runShowConfig
+    , runSaveConfig
     )
   where
 
-import Control.Lens
-import Data.Text (Text, pack, unpack)
-import Data.Text.Encoding (encodeUtf8)
-import Github.Api (fetchUsername)
+import App
+import Data.Text (Text, pack)
+import Effect.Config
+import Effect.Console
+import Effect.FileSystem
+import Effect.Github
 import Options.Applicative
 import qualified Path as P
-import qualified System.Directory as D
-import qualified UserConfig as U
-import Util
+import Data.Bifunctor (bimap)
 
 data InitArgs =
   InitArgs { root :: Text
@@ -45,19 +45,18 @@ parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f
 
 -- Process command
 
-saveConfig :: InitArgs -> IO ()
-saveConfig InitArgs {..} = do
-  D.createDirectoryIfMissing True $ unpack root
-  either <- validateToken token
+runSaveConfig :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadFileSystem m) => InitArgs -> AppM m ()
+runSaveConfig InitArgs {..} = do
+  createDirectoryIfMissing root
+  either <- fetchUsername token
   case either of
-    Left(err) -> throwText $ "Failed to verify token: " <> token <> " because of: " <> err
-    Right(name) -> U.saveConfig $ U.UserConfig { _absRootPath = root
-                                               , _githubToken = token
-                                               , _githubUsername = name
-                                               }
+    Left(err) -> printLn $ "Failed to verify token: " <> token <> " because of: " <> err
+    Right(name) -> saveConfig UserConfig { absRootPath = root
+                                         , githubToken = token
+                                         , githubUsername = name
+                                         }
 
-showConfig :: IO ()
-showConfig = U.getConfig >>= print.show
-
-validateToken :: Text -> IO (Either Text Text)
-validateToken = fetchUsername . encodeUtf8
+runShowConfig :: (MonadConfig m, MonadConsole m) => AppM m ()
+runShowConfig = do
+  conf <- getConfig
+  printLn.pack $ show conf

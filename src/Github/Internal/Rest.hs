@@ -1,30 +1,40 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Github.Internal.Rest
-    ( createTeam
+    ( CreateTeam(..)
+    , CreateTeamResponse(..)
+    , createTeam
     )
   where
 
-import qualified Data.ByteString as BS
-import Data.Text
 import Data.Aeson
-import Network.HTTP.Req
-import GHC.Generics
-import qualified Data.ByteString.Lazy.Char8 as BL
+import Data.Text
 import Data.Text.Encoding (encodeUtf8)
+import GHC.Generics
+import Network.HTTP.Req
 
-createTeam :: Text -> Text -> Maybe Text -> [Text] -> Text -> Text -> IO CreateTeamResponse
-createTeam org team des users privacy token = runReq defaultHttpConfig $ do
-    let hs = headers token
-    let body = CreateTeamBody { name = team
-                              , description = des
-                              , maintainers = users
-                              , privacy = privacy
+data CreateTeam =
+  CreateTeam { createTeamOrg :: Text
+             , createTeamName :: Text
+             , createTeamDescription :: Maybe Text
+             , createTeamUsers :: [Text]
+             , createTeamPrivacy :: Text
+             , createTeamToken :: Text
+             }
+
+createTeam :: CreateTeam -> IO CreateTeamResponse
+createTeam CreateTeam {..} = runReq defaultHttpConfig $ do
+    let hs = headers createTeamToken
+    let body = CreateTeamBody { name = createTeamName
+                              , description = createTeamDescription
+                              , maintainers = createTeamUsers
+                              , privacy = createTeamPrivacy
                               }
     responseBody
       <$> req POST
-              (https "api.github.com" /: "orgs" /: org /: "teams")
+              (https "api.github.com" /: "orgs" /: createTeamOrg /: "teams")
               (ReqBodyJson body)
               jsonResponse
               hs

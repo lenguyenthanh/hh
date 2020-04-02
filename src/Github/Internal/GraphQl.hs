@@ -14,6 +14,7 @@ module Github.Internal.GraphQl
     )
   where
 
+import Data.Text.Encoding (encodeUtf8)
 import Control.Monad ((<=<))
 import Control.Error.Safe (justErr)
 import Control.Error.Util (hush)
@@ -60,8 +61,8 @@ defineByDocumentFile
 
 type Repository = OrganizationRepositoriesNodesRepository
 
-fetchRepositories :: Text -> BS.ByteString -> IO (Either Text [Repository])
-fetchRepositories login token = fetchRepositories' login token Nothing
+fetchRepositories :: Text -> Text -> IO (Either Text [Repository])
+fetchRepositories login token = fetchRepositories' login (encodeUtf8 token) Nothing
 
 fetchRepositories' :: Text -> BS.ByteString -> Maybe Text -> IO (Either Text [Repository])
 fetchRepositories' login token after = do
@@ -90,9 +91,9 @@ getRepos = justErr "Invalid Response" .
 getPageInfo :: OrgRepos -> Maybe OrganizationRepositoriesPageInfoPageInfo
 getPageInfo = pure.pageInfo.repositories <=< organization
 
-fetchUsername :: BS.ByteString -> IO (Either Text Text)
+fetchUsername :: Text -> IO (Either Text Text)
 fetchUsername token = do
-  login <- fetchLogin token
+  login <- fetchLogin $ encodeUtf8 token
   pure $ bimap pack username login
 
 

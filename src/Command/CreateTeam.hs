@@ -3,21 +3,16 @@
 module Command.CreateTeam
     ( CreateTeamArgs(..)
     , createTeamArgsParser
-    , createTeam
+    , runCreateTeam
     )
   where
 
-import Control.Lens
-import Control.Monad (guard)
-import Command.Internal.Common
 import Command.Internal.Parser
-import Data.Text (Text)
-import Data.Text.IO (putStrLn)
-import qualified Git as G
-import qualified Github.Api as Api
+import Data.Text (Text, pack)
+import Effect.Config
+import Effect.Console
+import Effect.Github
 import Options.Applicative
-import Prelude hiding (putStrLn)
-import UserConfig
 
 data CreateTeamArgs =
   CreateTeamArgs { org :: Text
@@ -57,9 +52,16 @@ usersParser :: Parser Text
 usersParser = option str
     (long "users" <> short 'u' <> metavar "list" <> help "List of users for the new team")
 
-createTeam :: CreateTeamArgs -> IO ()
-createTeam (CreateTeamArgs org name des secret users) = do
+runCreateTeam :: (MonadConsole m, MonadConfig m, MonadGithub m) => CreateTeamArgs -> m ()
+runCreateTeam (CreateTeamArgs {..}) = do
   conf <- getConfig
   let privacy = "secret"
-  response <- Api.createTeam org name des users privacy $ conf^.githubToken
-  print $ show response
+  let createTeamArgs = CreateTeam { createTeamOrg = org
+                                  , createTeamName = teamName
+                                  , createTeamDescription = description
+                                  , createTeamUsers = users
+                                  , createTeamPrivacy = privacy
+                                  , createTeamToken = githubToken conf
+                                  }
+  response <- createTeam createTeamArgs
+  printLn.pack $ show response

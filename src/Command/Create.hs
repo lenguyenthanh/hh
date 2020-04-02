@@ -2,12 +2,16 @@
 module Command.Create
     (CreateArgs(..)
     , createArgsParser
-    , doCreate
+    , runCreate
     )
   where
 
 import Command.CreateBranch
 import Command.CreateTeam
+import Effect.Config
+import Effect.Console
+import Effect.Git
+import Effect.Github
 import Options.Applicative
 
 data CreateArgs =
@@ -29,9 +33,9 @@ createArgsParser = hsubparser
         )
     )
 
-doCreate :: CreateArgs -> IO ()
-doCreate (Team args) = createTeam args
-doCreate (Branch args) = createBranch args
+runCreate :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m) => CreateArgs -> m ()
+runCreate (Team args) = runCreateTeam args
+runCreate (Branch args) = runCreateBranch args
 
 teamParser :: Parser CreateArgs
 teamParser = Team <$> createTeamArgsParser

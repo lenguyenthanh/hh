@@ -1,16 +1,19 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE GADTs #-}
 
 module Command
     (Command(..)
-    , commands
+    , MonadCommand(..)
     )
   where
 
 import Command.CloneRepos
+import Command.Create
 import Command.InitConfig
 import Command.ShowRepos
+import Control.Monad.Reader
 import Options.Applicative
-import Command.Create
+import App
 
 data Command =
     ShowConfig
@@ -20,8 +23,23 @@ data Command =
   | Create CreateArgs
     deriving (Show)
 
-commands :: Parser Command
-commands = hsubparser
+-- | A class of monads that can access command-line arguments.
+class Monad m => MonadCommand m where
+  -- | Returns the command-line interface provided to the program.
+  getCommand :: m Command
+
+  default getCommand :: (MonadTrans t, MonadCommand m', m ~ t m') => m Command
+  getCommand = lift getCommand
+
+instance MonadCommand m => MonadCommand (ReaderT r m)
+instance MonadCommand m => MonadCommand (AppM m)
+
+instance MonadCommand IO where
+  getCommand = commands
+
+
+commandParser :: Parser Command
+commandParser = hsubparser
     (  command
           "init"
           (info initCommand
@@ -60,3 +78,20 @@ cloneReposCommand = CloneRepos <$> cloneReposArgsParser
 
 createParser :: Parser Command
 createParser = Create <$> createArgsParser
+
+
+hhProgDes = "Git multirepo maintenance tool"
+hhHeader = "HH - Git from distance"
+hhVersion = "0.1.0"
+
+versionOption :: Parser (a -> a)
+versionOption = infoOption
+    ("hh version " <> hhVersion)
+    (short 'v' <> long "version" <> help "Show the program version" <> hidden)
+
+commands :: IO Command
+commands = execParser $
+  info (commandParser <**> versionOption <**> helper)
+      ( fullDesc
+      <> progDesc hhProgDes
+      <> header hhHeader)

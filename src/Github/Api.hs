@@ -2,10 +2,8 @@
 
 module Github.Api
     (RemoteRepo(..)
-    , name
-    , sshUrl
-    , nameWithOwner
-    , url
+    , Rest.CreateTeam(..)
+    , Rest.CreateTeamResponse(..)
     , httpsUrl
     , fetchOrgRepos
     , GQL.fetchUsername
@@ -13,26 +11,21 @@ module Github.Api
     )
   where
 
-import qualified Github.Internal.Rest as Rest
 import Control.Error.Safe (justErr)
-import Control.Lens
-import qualified Data.ByteString as BS
+import qualified Data.Morpheus.Types as M
 import Data.Text
 import qualified Github.Internal.GraphQl as GQL
-import qualified Data.Morpheus.Types as M
-
+import qualified Github.Internal.Rest as Rest
 
 data RemoteRepo =
-  RemoteRepo { _name :: Text
-             , _sshUrl :: Text
-             , _nameWithOwner :: Text
-             , _url :: Text
+  RemoteRepo { name :: Text
+             , sshUrl :: Text
+             , nameWithOwner :: Text
+             , url :: Text
              }
   deriving (Show)
 
-makeLenses ''RemoteRepo
-
-fetchOrgRepos :: Text -> BS.ByteString -> IO (Either Text [RemoteRepo])
+fetchOrgRepos :: Text -> Text -> IO (Either Text [RemoteRepo])
 fetchOrgRepos org token = do
   response <- GQL.fetchRepositories org token
   pure $ response >>= (justErr "Invalid Response") . sequence . (fmap toRemoteRepo)
@@ -48,9 +41,5 @@ scalarToText :: M.ScalarValue -> Maybe Text
 scalarToText (M.String t) = Just t
 scalarToText x = Nothing
 
-httpsUrl :: Lens' RemoteRepo Text
-httpsUrl = lens getter setter
-  where
-    getter = (<> ".git") <$> _url
-    setter repo text =
-      repo {_url = text }
+httpsUrl :: RemoteRepo -> Text
+httpsUrl = (<> ".git") <$> url

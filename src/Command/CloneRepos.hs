@@ -3,20 +3,18 @@
 module Command.CloneRepos
     ( CloneReposArgs(..)
     , cloneReposArgsParser
-    , cloneRepos
+    , runCloneRepos
     )
   where
 
 import Command.Internal.Common
 import Command.Internal.Parser
-import Control.Lens
 import Data.Text (Text)
-import Data.Text.IO (putStrLn)
-import Git (clone)
-import Github.Api
+import Effect.Config
+import Effect.Console
+import Effect.Git
+import Effect.Github
 import Options.Applicative
-import Prelude hiding (putStrLn)
-import UserConfig
 
 data CloneReposArgs =
   CloneReposArgs { org :: Text
@@ -30,20 +28,20 @@ cloneReposArgsParser = CloneReposArgs
                <*> optional regexParser
                <*> useHttpsParser
 
-cloneRepos :: CloneReposArgs -> IO ()
-cloneRepos (CloneReposArgs {..}) = do
+runCloneRepos :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m) => CloneReposArgs -> m ()
+runCloneRepos (CloneReposArgs {..}) = do
   response <- fetchAndFilterRepos org regex
   case response of
     Right repos -> mapM_ (cloneRepo useHttps) repos
-    Left err -> putStrLn $ "Error " <> err
+    Left err -> printLn $ "Error " <> err
 
-cloneRepo :: Bool -> RemoteRepo -> IO ()
+cloneRepo :: (MonadConfig m, MonadGit m, MonadConsole m) => Bool -> RemoteRepo -> m ()
 cloneRepo useHttps repo = do
   conf <- getConfig
-  let path = concatPath [conf^.absRootPath, repo^.nameWithOwner]
+  let path = concatPath [absRootPath conf, nameWithOwner repo]
   _ <- clone url path
-  putStrLn $ "Cloned " <> repo^.name <> " success"
+  printLn $ "Cloned " <> name repo <> " success"
   where
     url = if useHttps
-            then repo^.httpsUrl
-            else repo^.sshUrl
+            then httpsUrl repo
+            else sshUrl repo

@@ -8,14 +8,14 @@ module Git
     )
   where
 
-import Shellmet
 import Data.Text
+import Shellmet
 
-clone :: Text -> Text -> IO Text
-clone url path = "git" $| ["clone", url, path]
+clone :: Text -> Text -> IO ()
+clone url path = "git" ["clone", url, path]
 
-newBranch :: Text -> Text -> Text -> IO Bool
-newBranch path new base = run $
+newBranch :: Text -> Text -> Text -> IO ()
+newBranch path new base =
   "git" ["-C", path, "branch", "-c", base, new]
 
 isGitDir :: Text -> IO Bool
