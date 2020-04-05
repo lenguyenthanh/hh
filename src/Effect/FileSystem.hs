@@ -6,10 +6,10 @@ module Effect.FileSystem
     )
   where
 
+import App
 import Control.Monad.Reader
 import Data.Text
 import qualified System.Directory as D
-import App
 
 -- | A class of monads that can interact with the filesystem.
 class Monad m => MonadFileSystem m where

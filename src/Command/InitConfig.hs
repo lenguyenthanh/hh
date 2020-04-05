@@ -9,6 +9,7 @@ module Command.InitConfig
   where
 
 import App
+import Data.Bifunctor (bimap)
 import Data.Text (Text, pack)
 import Effect.Config
 import Effect.Console
@@ -16,12 +17,12 @@ import Effect.FileSystem
 import Effect.Github
 import Options.Applicative
 import qualified Path as P
-import Data.Bifunctor (bimap)
 
-data InitArgs =
-  InitArgs { root :: Text
-           , token :: Text
-           }
+data InitArgs
+  = InitArgs
+    { root :: Text
+    , token :: Text
+    }
   deriving (Show)
 
 initArgsParser :: Parser InitArgs
@@ -45,7 +46,9 @@ parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f
 
 -- Process command
 
-runSaveConfig :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadFileSystem m) => InitArgs -> AppM m ()
+runSaveConfig
+  :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadFileSystem m)
+  => InitArgs -> AppM m ()
 runSaveConfig InitArgs {..} = do
   createDirectoryIfMissing root
   either <- fetchUsername token
@@ -56,7 +59,9 @@ runSaveConfig InitArgs {..} = do
                                          , githubUsername = name
                                          }
 
-runShowConfig :: (MonadConfig m, MonadConsole m) => AppM m ()
+runShowConfig
+  :: (MonadConfig m, MonadConsole m)
+  => AppM m ()
 runShowConfig = do
   conf <- getConfig
   printLn.pack $ show conf

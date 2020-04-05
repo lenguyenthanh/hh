@@ -6,9 +6,9 @@ module Effect.Console
     )
   where
 
+import App
 import Control.Monad.Reader
 import Data.Text
-import App
 
 -- | A class of monads that can interact with the Console.
 class Monad m => MonadConsole m where

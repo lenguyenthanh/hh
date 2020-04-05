@@ -14,16 +14,16 @@ module Github.Internal.GraphQl
     )
   where
 
-import Data.Text.Encoding (encodeUtf8)
-import Control.Monad ((<=<))
 import Control.Error.Safe (justErr)
 import Control.Error.Util (hush)
+import Control.Monad ((<=<))
 import Data.Bifunctor (bimap, first)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy.Char8 as BL
 import Data.Morpheus.Client (Fetch(..), defineByDocumentFile, gql)
 import Data.Morpheus.Types (ScalarValue(..))
 import Data.Text (Text, pack, unpack)
+import Data.Text.Encoding (encodeUtf8)
 import Network.HTTP.Req
 
 defineByDocumentFile
@@ -77,7 +77,8 @@ fetchRepositories' login token after = do
             rec <- fetchRepositories' login token (endCursor info)
             pure $ mappend <$> list <*> rec
          else pure list
-    Nothing -> pure list
+    Nothing ->
+      pure list
   where
     args = OrgReposArgs { orgReposArgsLogin = unpack login
                         , orgReposArgsCount = 10

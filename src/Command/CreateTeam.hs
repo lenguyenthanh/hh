@@ -14,13 +14,15 @@ import Effect.Console
 import Effect.Github
 import Options.Applicative
 
-data CreateTeamArgs =
-  CreateTeamArgs { org :: Text
-                 , teamName :: Text
-                 , description :: Maybe Text
-                 , secret :: Bool
-                 , users :: [Text]
-                 } deriving (Show)
+data CreateTeamArgs
+  = CreateTeamArgs
+    { org :: Text
+    , teamName :: Text
+    , description :: Maybe Text
+    , secret :: Bool
+    , users :: [Text]
+    }
+  deriving (Show)
 
 createTeamArgsParser :: Parser CreateTeamArgs
 createTeamArgsParser = CreateTeamArgs
@@ -52,7 +54,9 @@ usersParser :: Parser Text
 usersParser = option str
     (long "users" <> short 'u' <> metavar "list" <> help "List of users for the new team")
 
-runCreateTeam :: (MonadConsole m, MonadConfig m, MonadGithub m) => CreateTeamArgs -> m ()
+runCreateTeam
+  :: (MonadConsole m, MonadConfig m, MonadGithub m)
+  => CreateTeamArgs -> m ()
 runCreateTeam (CreateTeamArgs {..}) = do
   conf <- getConfig
   let privacy = "secret"

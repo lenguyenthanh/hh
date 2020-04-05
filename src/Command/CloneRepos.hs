@@ -16,11 +16,13 @@ import Effect.Git
 import Effect.Github
 import Options.Applicative
 
-data CloneReposArgs =
-  CloneReposArgs { org :: Text
-                 , regex :: Maybe Text
-                 , useHttps :: Bool
-                 } deriving (Show)
+data CloneReposArgs
+  = CloneReposArgs
+    { org :: Text
+    , regex :: Maybe Text
+    , useHttps :: Bool
+    }
+  deriving (Show)
 
 cloneReposArgsParser :: Parser CloneReposArgs
 cloneReposArgsParser = CloneReposArgs
@@ -28,12 +30,16 @@ cloneReposArgsParser = CloneReposArgs
                <*> optional regexParser
                <*> useHttpsParser
 
-runCloneRepos :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m) => CloneReposArgs -> m ()
+runCloneRepos
+  :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m)
+  => CloneReposArgs -> m ()
 runCloneRepos (CloneReposArgs {..}) = do
   response <- fetchAndFilterRepos org regex
   case response of
-    Right repos -> mapM_ (cloneRepo useHttps) repos
-    Left err -> printLn $ "Error " <> err
+    Right repos ->
+      mapM_ (cloneRepo useHttps) repos
+    Left err ->
+      printLn $ "Error " <> err
 
 cloneRepo :: (MonadConfig m, MonadGit m, MonadConsole m) => Bool -> RemoteRepo -> m ()
 cloneRepo useHttps repo = do

@@ -16,13 +16,15 @@ import Effect.Git
 import Effect.Github
 import Options.Applicative
 
-data CreateBranchArgs =
-  CreateBranchArgs { org :: Text
-                   , regex :: Maybe Text
-                   , newBranch :: Text
-                   , baseBranch :: Text
-                   , useHttps :: Bool
-                   } deriving (Show)
+data CreateBranchArgs
+  = CreateBranchArgs
+    { org :: Text
+    , regex :: Maybe Text
+    , newBranch :: Text
+    , baseBranch :: Text
+    , useHttps :: Bool
+    }
+  deriving (Show)
 
 createBranchArgsParser :: Parser CreateBranchArgs
 createBranchArgsParser = CreateBranchArgs
@@ -32,14 +34,18 @@ createBranchArgsParser = CreateBranchArgs
                <*> baseBranchParser
                <*> useHttpsParser
 
-runCreateBranch :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m) => CreateBranchArgs -> m ()
+runCreateBranch
+  :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m)
+  => CreateBranchArgs -> m ()
 runCreateBranch (CreateBranchArgs {..}) = do
   response <- fetchAndFilterRepos org regex
   case response of
     Right repos -> mapM_ (mkBranch useHttps newBranch baseBranch) repos
     Left err -> printLn $ "Error " <> err
 
-mkBranch :: (MonadConfig m, MonadConsole m, MonadGit m) => Bool -> Text -> Text -> RemoteRepo -> m ()
+mkBranch
+  :: (MonadConfig m, MonadConsole m, MonadGit m)
+  => Bool -> Text -> Text -> RemoteRepo -> m ()
 mkBranch useHttps newBranch baseBranch repo = do
   conf <- getConfig
   let path = concatPath [absRootPath conf, nameWithOwner repo]

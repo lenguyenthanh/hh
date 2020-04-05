@@ -1,4 +1,3 @@
-
 module Command.Create
     (CreateArgs(..)
     , createArgsParser
@@ -14,9 +13,9 @@ import Effect.Git
 import Effect.Github
 import Options.Applicative
 
-data CreateArgs =
-    Team(CreateTeamArgs)
-  | Branch(CreateBranchArgs)
+data CreateArgs
+  = Team (CreateTeamArgs)
+  | Branch (CreateBranchArgs)
   deriving (Show)
 
 createArgsParser :: Parser CreateArgs

@@ -17,8 +17,8 @@ import GHC.Generics
 import qualified System.Directory as D
 import System.FilePath ((</>))
 
-data UserConfig =
-  UserConfig
+data UserConfig
+  = UserConfig
     { absRootPath :: Text
     , githubToken :: Text
     , githubUsername :: Text

@@ -10,10 +10,10 @@ module Effect.Github
     )
   where
 
+import App
 import Control.Monad.Reader
 import Data.Text
 import qualified Github.Api as G
-import App
 
 class Monad m => MonadGithub m where
   fetchUsername :: Text -> m (Either Text Text)

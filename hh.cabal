@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e13a30b158f581ddc0a797bc80cd999fb3070999257de3da25fc3e8f19add5e0
+-- hash: 5725da1aa90ac41e99ef157c3e8cad87d25ec310885129b13727449d0ab6bd15
 
 name:           hh
 version:        0.1.0.0
@@ -37,6 +37,7 @@ library
       Command.Internal.Common
       Command.Internal.Parser
       Command.ShowRepos
+      Effect.Command
       Effect.Config
       Effect.Console
       Effect.FileSystem

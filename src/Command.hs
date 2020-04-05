@@ -1,9 +1,7 @@
-{-# LANGUAGE DefaultSignatures #-}
-{-# LANGUAGE GADTs #-}
 
 module Command
     (Command(..)
-    , MonadCommand(..)
+    , commands
     )
   where
 
@@ -11,31 +9,16 @@ import Command.CloneRepos
 import Command.Create
 import Command.InitConfig
 import Command.ShowRepos
-import Control.Monad.Reader
 import Options.Applicative
-import App
 
-data Command =
-    ShowConfig
+data Command
+  = ShowConfig
   | Init InitArgs
   | ShowRepos ShowRepArgs
   | CloneRepos CloneReposArgs
   | Create CreateArgs
-    deriving (Show)
+  deriving (Show)
 
--- | A class of monads that can access command-line arguments.
-class Monad m => MonadCommand m where
-  -- | Returns the command-line interface provided to the program.
-  getCommand :: m Command
-
-  default getCommand :: (MonadTrans t, MonadCommand m', m ~ t m') => m Command
-  getCommand = lift getCommand
-
-instance MonadCommand m => MonadCommand (ReaderT r m)
-instance MonadCommand m => MonadCommand (AppM m)
-
-instance MonadCommand IO where
-  getCommand = commands
 
 
 commandParser :: Parser Command

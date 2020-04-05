@@ -17,12 +17,13 @@ import Data.Text
 import qualified Github.Internal.GraphQl as GQL
 import qualified Github.Internal.Rest as Rest
 
-data RemoteRepo =
-  RemoteRepo { name :: Text
-             , sshUrl :: Text
-             , nameWithOwner :: Text
-             , url :: Text
-             }
+data RemoteRepo
+  = RemoteRepo
+    { name :: Text
+    , sshUrl :: Text
+    , nameWithOwner :: Text
+    , url :: Text
+    }
   deriving (Show)
 
 fetchOrgRepos :: Text -> Text -> IO (Either Text [RemoteRepo])

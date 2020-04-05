@@ -15,14 +15,16 @@ import Data.Text.Encoding (encodeUtf8)
 import GHC.Generics
 import Network.HTTP.Req
 
-data CreateTeam =
-  CreateTeam { createTeamOrg :: Text
-             , createTeamName :: Text
-             , createTeamDescription :: Maybe Text
-             , createTeamUsers :: [Text]
-             , createTeamPrivacy :: Text
-             , createTeamToken :: Text
-             }
+data CreateTeam
+  = CreateTeam
+    { createTeamOrg :: Text
+    , createTeamName :: Text
+    , createTeamDescription :: Maybe Text
+    , createTeamUsers :: [Text]
+    , createTeamPrivacy :: Text
+    , createTeamToken :: Text
+    }
+  deriving (Show)
 
 createTeam :: CreateTeam -> IO CreateTeamResponse
 createTeam CreateTeam {..} = runReq defaultHttpConfig $ do
@@ -39,22 +41,23 @@ createTeam CreateTeam {..} = runReq defaultHttpConfig $ do
               jsonResponse
               hs
 
-data CreateTeamBody =
-  CreateTeamBody { name :: Text
-                 , description :: Maybe Text
-                 , maintainers :: [Text]
-                 , privacy :: Text
-                 }
+data CreateTeamBody
+  = CreateTeamBody
+    { name :: Text
+    , description :: Maybe Text
+    , maintainers :: [Text]
+    , privacy :: Text
+    }
   deriving (Generic, Show)
 
 instance ToJSON CreateTeamBody
 instance FromJSON CreateTeamBody
 
-data CreateTeamResponse =
-  CreateTeamResponse { id :: Int
-                     , htmlUrl :: String
-                     }
-  deriving (Generic, Show)
+data CreateTeamResponse = CreateTeamResponse
+    { id :: Int
+    , htmlUrl :: String
+    }
+    deriving (Generic, Show)
 
 instance ToJSON CreateTeamResponse
 instance FromJSON CreateTeamResponse where

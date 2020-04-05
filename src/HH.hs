@@ -9,6 +9,7 @@ import Command.CloneRepos
 import Command.Create
 import Command.InitConfig
 import Command.ShowRepos
+import Effect.Command
 
 hh :: IO ()
 hh = runAppM app ()
