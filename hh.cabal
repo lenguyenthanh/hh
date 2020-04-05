@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5725da1aa90ac41e99ef157c3e8cad87d25ec310885129b13727449d0ab6bd15
+-- hash: ea783589c11368049f66c24bfbe2ec52126e98fdd323754bea1565661ea3d307
 
 name:           hh
 version:        0.1.0.0
@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
       App
+      AppConfig
       Command
       Command.CloneRepos
       Command.Create
@@ -43,6 +44,7 @@ library
       Effect.FileSystem
       Effect.Git
       Effect.Github
+      Env
       Git
       Github.Api
       Github.Internal.GraphQl
@@ -59,6 +61,7 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
+    , dhall >=1.31.1
     , directory
     , errors
     , exceptions
@@ -69,7 +72,6 @@ library
     , optparse-applicative
     , path
     , regex-tdfa
-    , regex-tdfa-text
     , req >=3.1.0
     , safe-exceptions
     , shellmet
@@ -89,6 +91,7 @@ executable hh
       aeson
     , base >=4.7 && <5
     , bytestring
+    , dhall >=1.31.1
     , directory
     , errors
     , exceptions
@@ -100,7 +103,6 @@ executable hh
     , optparse-applicative
     , path
     , regex-tdfa
-    , regex-tdfa-text
     , req >=3.1.0
     , safe-exceptions
     , shellmet
@@ -121,6 +123,7 @@ test-suite hh-test
       aeson
     , base >=4.7 && <5
     , bytestring
+    , dhall >=1.31.1
     , directory
     , errors
     , exceptions
@@ -132,7 +135,6 @@ test-suite hh-test
     , optparse-applicative
     , path
     , regex-tdfa
-    , regex-tdfa-text
     , req >=3.1.0
     , safe-exceptions
     , shellmet

@@ -11,15 +11,16 @@ import Effect.Console
 import Effect.Github
 import System.FilePath ((</>))
 import Text.Regex.TDFA
-import Text.Regex.TDFA.Text
 
 filterRepos :: Maybe Text -> [RemoteRepo] -> [RemoteRepo]
 filterRepos Nothing x = x
 filterRepos (Just regex) xs = filter (\x -> (name x) =~ regex :: Bool) xs
 
-fetchAndFilterRepos :: (MonadConfig m, MonadConsole m, MonadGithub m) => Text -> Maybe Text -> m (Either Text [RemoteRepo])
-fetchAndFilterRepos org regex = do
-  conf <- getConfig
+fetchAndFilterRepos
+  :: (MonadConfig m, MonadConsole m, MonadGithub m)
+  => Text -> Text -> Text -> Maybe Text -> m (Either Text [RemoteRepo])
+fetchAndFilterRepos configDir configName org regex = do
+  conf <- getConfig configDir configName
   let token = githubToken conf
   response <- fetchOrgRepos org token
   pure $ filterRepos regex <$> response

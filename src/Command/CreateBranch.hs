@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Command.CreateBranch
@@ -7,13 +9,16 @@ module Command.CreateBranch
     )
   where
 
+import AppConfig
 import Command.Internal.Common
 import Command.Internal.Parser
+import Control.Monad.Reader
 import Data.Text (Text)
 import Effect.Config
 import Effect.Console
 import Effect.Git
 import Effect.Github
+import Env
 import Options.Applicative
 
 data CreateBranchArgs
@@ -35,19 +40,23 @@ createBranchArgsParser = CreateBranchArgs
                <*> useHttpsParser
 
 runCreateBranch
-  :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m)
+  :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m)
   => CreateBranchArgs -> m ()
 runCreateBranch (CreateBranchArgs {..}) = do
-  response <- fetchAndFilterRepos org regex
+  env <- ask
+  let AppConfig{..} = appConfig env
+  response <- fetchAndFilterRepos configDir configName org regex
   case response of
     Right repos -> mapM_ (mkBranch useHttps newBranch baseBranch) repos
     Left err -> printLn $ "Error " <> err
 
 mkBranch
-  :: (MonadConfig m, MonadConsole m, MonadGit m)
+  :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGit m)
   => Bool -> Text -> Text -> RemoteRepo -> m ()
 mkBranch useHttps newBranch baseBranch repo = do
-  conf <- getConfig
+  env <- ask
+  let AppConfig{..} = appConfig env
+  conf <- getConfig configDir configName
   let path = concatPath [absRootPath conf, nameWithOwner repo]
   isGit <- isGitDir path
   doBranch isGit path >> pushBranch path newBranch

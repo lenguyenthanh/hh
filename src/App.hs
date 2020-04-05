@@ -6,13 +6,13 @@ module App
     )
   where
 
-
 import Control.Monad.IO.Class
 import Control.Monad.Reader
+import Env
 
 newtype AppM m a =
-    AppM { unAppM :: ReaderT () m a }
-    deriving (Functor, Applicative, Monad, MonadIO, MonadTrans, MonadReader ())
+    AppM { unAppM :: ReaderT Env m a }
+    deriving (Functor, Applicative, Monad, MonadIO, MonadTrans, MonadReader Env)
 
-runAppM :: AppM m a -> () -> m a
-runAppM app env = runReaderT (unAppM app) env
+runAppM :: Env -> AppM m a -> m a
+runAppM env app = runReaderT (unAppM app) env

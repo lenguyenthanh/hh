@@ -36,9 +36,9 @@ dependencies:
 - req >= 3.1.0
 - lens
 - regex-tdfa
-- regex-tdfa-text
 - shellmet
 - transformers
+- dhall >= 1.31.1
 
 default-extensions:
 - OverloadedStrings

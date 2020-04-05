@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Command.CloneRepos
@@ -7,13 +8,16 @@ module Command.CloneRepos
     )
   where
 
+import AppConfig
 import Command.Internal.Common
 import Command.Internal.Parser
+import Control.Monad.Reader
 import Data.Text (Text)
 import Effect.Config
 import Effect.Console
 import Effect.Git
 import Effect.Github
+import Env
 import Options.Applicative
 
 data CloneReposArgs
@@ -31,19 +35,25 @@ cloneReposArgsParser = CloneReposArgs
                <*> useHttpsParser
 
 runCloneRepos
-  :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m)
+  :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m)
   => CloneReposArgs -> m ()
 runCloneRepos (CloneReposArgs {..}) = do
-  response <- fetchAndFilterRepos org regex
+  env <- ask
+  let AppConfig{..} = appConfig env
+  response <- fetchAndFilterRepos configDir configName org regex
   case response of
     Right repos ->
       mapM_ (cloneRepo useHttps) repos
     Left err ->
       printLn $ "Error " <> err
 
-cloneRepo :: (MonadConfig m, MonadGit m, MonadConsole m) => Bool -> RemoteRepo -> m ()
+cloneRepo
+  :: (MonadReader Env m, MonadConfig m, MonadGit m, MonadConsole m)
+  => Bool -> RemoteRepo -> m ()
 cloneRepo useHttps repo = do
-  conf <- getConfig
+  env <- ask
+  let AppConfig{..} = appConfig env
+  conf <- getConfig configDir configName
   let path = concatPath [absRootPath conf, nameWithOwner repo]
   _ <- clone url path
   printLn $ "Cloned " <> name repo <> " success"

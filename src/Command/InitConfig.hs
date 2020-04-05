@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Command.InitConfig
@@ -8,13 +9,15 @@ module Command.InitConfig
     )
   where
 
-import App
+import AppConfig
+import Control.Monad.Reader
 import Data.Bifunctor (bimap)
 import Data.Text (Text, pack)
 import Effect.Config
 import Effect.Console
 import Effect.FileSystem
 import Effect.Github
+import Env
 import Options.Applicative
 import qualified Path as P
 
@@ -47,21 +50,27 @@ parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f
 -- Process command
 
 runSaveConfig
-  :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadFileSystem m)
-  => InitArgs -> AppM m ()
+  :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGithub m, MonadFileSystem m)
+  => InitArgs -> m ()
 runSaveConfig InitArgs {..} = do
+  env <- ask
+  let AppConfig{..} = appConfig env
   createDirectoryIfMissing root
   either <- fetchUsername token
   case either of
-    Left(err) -> printLn $ "Failed to verify token: " <> token <> " because of: " <> err
-    Right(name) -> saveConfig UserConfig { absRootPath = root
-                                         , githubToken = token
-                                         , githubUsername = name
-                                         }
+    Left(err) ->
+      printLn $ "Failed to verify token: " <> token <> " because of: " <> err
+    Right(name) ->
+      saveConfig configDir configName UserConfig { absRootPath = root
+                                                 , githubToken = token
+                                                 , githubUsername = name
+                                                 }
 
 runShowConfig
-  :: (MonadConfig m, MonadConsole m)
-  => AppM m ()
+  :: (MonadReader Env m, MonadConfig m, MonadConsole m)
+  => m ()
 runShowConfig = do
-  conf <- getConfig
+  env <- ask
+  let AppConfig{..} = appConfig env
+  conf <- getConfig configDir configName
   printLn.pack $ show conf

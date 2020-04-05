@@ -28,15 +28,17 @@ data UserConfig
 instance ToJSON UserConfig
 instance FromJSON UserConfig
 
-saveConfig :: UserConfig -> IO ()
-saveConfig config = userConfigPath >>= (saveConfig' config)
+saveConfig :: Text -> Text -> UserConfig -> IO ()
+saveConfig dir name config =
+  userConfigPath dir name
+    >>= (saveConfig' config)
   where
     saveConfig' :: UserConfig -> FilePath -> IO ()
     saveConfig' conf fPath = (LB.writeFile fPath) $ encode conf
 
 
-getConfig :: IO UserConfig
-getConfig = userConfigPath >>= getConfig'
+getConfig :: Text -> Text -> IO UserConfig
+getConfig dir name = userConfigPath dir name >>= getConfig'
   where
     getConfig' :: FilePath -> IO UserConfig
     getConfig' fPath = do
@@ -50,14 +52,8 @@ getConfig = userConfigPath >>= getConfig'
         else throwString "Config files does not exist. You may need to init it first."
 
 
-config_dir = "hh"
-config_file = "config.json"
-
-userConfigPath :: IO FilePath
-userConfigPath = userConfigPath' config_dir config_file
-  where
-    userConfigPath' :: FilePath -> FilePath -> IO FilePath
-    userConfigPath' path name = do
-      dir <- D.getXdgDirectory D.XdgConfig path
-      D.createDirectoryIfMissing True dir
-      pure $ dir </> name
+userConfigPath :: Text -> Text -> IO FilePath
+userConfigPath dir name = do
+      path <- D.getXdgDirectory D.XdgConfig $ unpack dir
+      D.createDirectoryIfMissing True path
+      pure $ path </> unpack name

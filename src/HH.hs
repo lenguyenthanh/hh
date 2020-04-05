@@ -1,26 +1,42 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module HH
     (hh
     )
   where
 
 import App
+import AppConfig
 import Command
 import Command.CloneRepos
 import Command.Create
 import Command.InitConfig
 import Command.ShowRepos
+import Control.Monad.Reader
 import Effect.Command
+import Effect.Config
+import Effect.Console
+import Effect.FileSystem
+import Effect.Git
+import Effect.Github
+import Env
 
 hh :: IO ()
-hh = runAppM app ()
+hh = do
+  conf <- getAppConfig
+  let env = Env { appConfig = conf }
+  runAppM env main
 
---app :: (Monad m, MonadCommand m) => AppM m ()
-app :: AppM IO ()
-app = do
+main
+  :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m, MonadCommand m, MonadFileSystem m)
+  => AppM m ()
+main = do
   command <- getCommand
   runCommand command
 
-runCommand :: Command -> AppM IO ()
+runCommand
+  :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m, MonadFileSystem m, MonadReader Env m)
+  => Command -> m ()
 runCommand (Init args) = runSaveConfig args
 runCommand ShowConfig = runShowConfig
 runCommand (ShowRepos args) = runShowRepos args

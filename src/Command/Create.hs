@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Command.Create
     (CreateArgs(..)
     , createArgsParser
@@ -7,10 +9,12 @@ module Command.Create
 
 import Command.CreateBranch
 import Command.CreateTeam
+import Control.Monad.Reader
 import Effect.Config
 import Effect.Console
 import Effect.Git
 import Effect.Github
+import Env
 import Options.Applicative
 
 data CreateArgs
@@ -32,7 +36,7 @@ createArgsParser = hsubparser
         )
     )
 
-runCreate :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m) => CreateArgs -> m ()
+runCreate :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m, MonadReader Env m) => CreateArgs -> m ()
 runCreate (Team args) = runCreateTeam args
 runCreate (Branch args) = runCreateBranch args
 

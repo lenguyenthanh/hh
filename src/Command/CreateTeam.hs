@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Command.CreateTeam
@@ -7,11 +8,14 @@ module Command.CreateTeam
     )
   where
 
+import AppConfig
 import Command.Internal.Parser
+import Control.Monad.Reader
 import Data.Text (Text, pack)
 import Effect.Config
 import Effect.Console
 import Effect.Github
+import Env
 import Options.Applicative
 
 data CreateTeamArgs
@@ -55,10 +59,12 @@ usersParser = option str
     (long "users" <> short 'u' <> metavar "list" <> help "List of users for the new team")
 
 runCreateTeam
-  :: (MonadConsole m, MonadConfig m, MonadGithub m)
+  :: (MonadReader Env m, MonadConsole m, MonadConfig m, MonadGithub m)
   => CreateTeamArgs -> m ()
 runCreateTeam (CreateTeamArgs {..}) = do
-  conf <- getConfig
+  env <- ask
+  let AppConfig{..} = appConfig env
+  conf <- getConfig configDir configName
   let privacy = "secret"
   let createTeamArgs = CreateTeam { createTeamOrg = org
                                   , createTeamName = teamName
