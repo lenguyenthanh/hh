@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Git
+module HH.Git.Git
     (clone
     , newBranch
     , isGitDir

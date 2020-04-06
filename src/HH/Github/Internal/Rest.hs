@@ -2,7 +2,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Github.Internal.Rest
+module HH.Github.Internal.Rest
     ( CreateTeam(..)
     , CreateTeamResponse(..)
     , createTeam
@@ -57,7 +57,7 @@ data CreateTeamResponse = CreateTeamResponse
     { id :: Int
     , htmlUrl :: String
     }
-    deriving (Generic, Show)
+  deriving (Generic, Show)
 
 instance ToJSON CreateTeamResponse
 instance FromJSON CreateTeamResponse where

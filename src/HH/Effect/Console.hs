@@ -1,14 +1,14 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE GADTs #-}
 
-module Effect.Console
+module HH.Effect.Console
     (MonadConsole(..)
     )
   where
 
-import App
 import Control.Monad.Reader
 import Data.Text
+import HH.App
 
 -- | A class of monads that can interact with the Console.
 class Monad m => MonadConsole m where

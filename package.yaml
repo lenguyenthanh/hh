@@ -38,7 +38,7 @@ dependencies:
 - regex-tdfa
 - shellmet
 - transformers
-- dhall >= 1.31.1
+- dhall
 
 default-extensions:
 - OverloadedStrings

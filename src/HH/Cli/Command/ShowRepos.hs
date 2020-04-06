@@ -1,22 +1,22 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Command.ShowRepos
+module HH.Cli.Command.ShowRepos
     ( ShowRepArgs(..)
     , showRepoArgsParser
     , runShowRepos
     )
   where
 
-import AppConfig
-import Command.Internal.Common
-import Command.Internal.Parser
 import Control.Monad.Reader
 import Data.Text (Text)
-import Effect.Config
-import Effect.Console
-import Effect.Github
-import Env
+import HH.AppConfig
+import HH.Cli.Command.Internal.Common
+import HH.Cli.Command.Internal.Parser
+import HH.Effect.Config
+import HH.Effect.Console
+import HH.Effect.Github
+import HH.Env
 import Options.Applicative
 
 data ShowRepArgs

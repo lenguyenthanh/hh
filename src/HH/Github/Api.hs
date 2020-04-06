@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Github.Api
+module HH.Github.Api
     (RemoteRepo(..)
     , Rest.CreateTeam(..)
     , Rest.CreateTeamResponse(..)
@@ -14,8 +14,8 @@ module Github.Api
 import Control.Error.Safe (justErr)
 import qualified Data.Morpheus.Types as M
 import Data.Text
-import qualified Github.Internal.GraphQl as GQL
-import qualified Github.Internal.Rest as Rest
+import qualified HH.Github.Internal.GraphQl as GQL
+import qualified HH.Github.Internal.Rest as Rest
 
 data RemoteRepo
   = RemoteRepo

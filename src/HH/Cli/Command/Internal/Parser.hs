@@ -1,4 +1,4 @@
-module Command.Internal.Parser
+module HH.Cli.Command.Internal.Parser
     ( organizationParser
     , regexParser
     , useHttpsParser

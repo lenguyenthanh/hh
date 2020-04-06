@@ -1,14 +1,13 @@
-
-module Command
-    (Command(..)
+module HH.Cli.Command
+    ( Command(..)
     , commands
     )
   where
 
-import Command.CloneRepos
-import Command.Create
-import Command.InitConfig
-import Command.ShowRepos
+import HH.Cli.Command.CloneRepos
+import HH.Cli.Command.Create
+import HH.Cli.Command.InitConfig
+import HH.Cli.Command.ShowRepos
 import Options.Applicative
 
 data Command

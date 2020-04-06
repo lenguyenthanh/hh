@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module App
+module HH.App
     (AppM(..)
     , runAppM
     )
@@ -8,7 +8,7 @@ module App
 
 import Control.Monad.IO.Class
 import Control.Monad.Reader
-import Env
+import HH.Env
 
 newtype AppM m a =
     AppM { unAppM :: ReaderT Env m a }

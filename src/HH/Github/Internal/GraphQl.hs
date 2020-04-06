@@ -6,7 +6,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Github.Internal.GraphQl
+module HH.Github.Internal.GraphQl
     ( fetchUsername
     , fetchRepositories
     , OrganizationRepositoriesNodesRepository(..)

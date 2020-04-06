@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Command.InitConfig
+module HH.Cli.Command.InitConfig
     ( InitArgs
     , initArgsParser
     , runShowConfig
@@ -9,15 +9,15 @@ module Command.InitConfig
     )
   where
 
-import AppConfig
 import Control.Monad.Reader
 import Data.Bifunctor (bimap)
 import Data.Text (Text, pack)
-import Effect.Config
-import Effect.Console
-import Effect.FileSystem
-import Effect.Github
-import Env
+import HH.AppConfig
+import HH.Effect.Config
+import HH.Effect.Console
+import HH.Effect.FileSystem
+import HH.Effect.Github
+import HH.Env
 import Options.Applicative
 import qualified Path as P
 

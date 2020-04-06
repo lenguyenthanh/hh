@@ -1,4 +1,4 @@
-module Command.Internal.Common
+module HH.Cli.Command.Internal.Common
     (filterRepos
     , fetchAndFilterRepos
     , concatPath
@@ -6,9 +6,9 @@ module Command.Internal.Common
   where
 
 import Data.Text (Text, pack, unpack)
-import Effect.Config
-import Effect.Console
-import Effect.Github
+import HH.Effect.Config
+import HH.Effect.Console
+import HH.Effect.Github
 import System.FilePath ((</>))
 import Text.Regex.TDFA
 

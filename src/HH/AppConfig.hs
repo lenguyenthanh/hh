@@ -1,9 +1,7 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE OverloadedStrings #-}
 
-module AppConfig
+module HH.AppConfig
     ( AppConfig(..)
     , getAppConfig
     )

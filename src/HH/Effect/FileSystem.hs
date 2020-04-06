@@ -1,14 +1,14 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE GADTs #-}
 
-module Effect.FileSystem
+module HH.Effect.FileSystem
     (MonadFileSystem(..)
     )
   where
 
-import App
 import Control.Monad.Reader
 import Data.Text
+import HH.App
 import qualified System.Directory as D
 
 -- | A class of monads that can interact with the filesystem.

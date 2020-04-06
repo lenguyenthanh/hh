@@ -1,20 +1,20 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Command.Create
+module HH.Cli.Command.Create
     (CreateArgs(..)
     , createArgsParser
     , runCreate
     )
   where
 
-import Command.CreateBranch
-import Command.CreateTeam
 import Control.Monad.Reader
-import Effect.Config
-import Effect.Console
-import Effect.Git
-import Effect.Github
-import Env
+import HH.Cli.Command.CreateBranch
+import HH.Cli.Command.CreateTeam
+import HH.Effect.Config
+import HH.Effect.Console
+import HH.Effect.Git
+import HH.Effect.Github
+import HH.Env
 import Options.Applicative
 
 data CreateArgs

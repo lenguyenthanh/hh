@@ -2,7 +2,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module UserConfig
+module HH.UserConfig
     (UserConfig(..)
     , saveConfig
     , getConfig

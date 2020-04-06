@@ -1,14 +1,14 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE GADTs #-}
 
-module Effect.Command
+module HH.Effect.Command
     (MonadCommand(..)
     )
   where
 
-import App
-import Command
 import Control.Monad.Reader
+import HH.App
+import HH.Cli.Command
 
 
 -- | A class of monads that can access command-line arguments.
@@ -18,6 +18,7 @@ class Monad m => MonadCommand m where
 
   default getCommand :: (MonadTrans t, MonadCommand m', m ~ t m') => m Command
   getCommand = lift getCommand
+
 
 instance MonadCommand m => MonadCommand (ReaderT r m)
 instance MonadCommand m => MonadCommand (AppM m)

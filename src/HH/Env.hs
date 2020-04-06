@@ -1,9 +1,9 @@
-module Env
+module HH.Env
     ( Env(..)
     )
   where
 
-import AppConfig
+import HH.AppConfig
 
 data Env
   = Env

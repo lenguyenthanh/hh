@@ -1,16 +1,16 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE GADTs #-}
 
-module Effect.Git
+module HH.Effect.Git
     ( MonadGit(..)
     )
   where
 
 
-import App
 import Control.Monad.Reader
 import Data.Text
-import qualified Git as G
+import HH.App
+import qualified HH.Git.Git as G
 
 class Monad m => MonadGit m where
   clone :: Text -> Text -> m ()

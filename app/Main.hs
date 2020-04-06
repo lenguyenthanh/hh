@@ -3,7 +3,7 @@
 
 module Main where
 
-import HH
+import HH.Main
 
 main :: IO ()
-main = hh
+main = mainIO

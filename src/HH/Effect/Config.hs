@@ -1,16 +1,16 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE GADTs #-}
 
-module Effect.Config
+module HH.Effect.Config
     ( MonadConfig(..)
     , U.UserConfig(..)
     )
   where
 
-import App
 import Control.Monad.Reader
 import Data.Text
-import qualified UserConfig as U
+import HH.App
+import qualified HH.UserConfig as U
 
 class Monad m => MonadConfig m where
   getConfig :: Text -> Text -> m U.UserConfig

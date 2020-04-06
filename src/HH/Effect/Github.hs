@@ -1,7 +1,7 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE GADTs #-}
 
-module Effect.Github
+module HH.Effect.Github
     ( MonadGithub(..)
     , G.RemoteRepo(..)
     , G.CreateTeam(..)
@@ -10,10 +10,10 @@ module Effect.Github
     )
   where
 
-import App
 import Control.Monad.Reader
 import Data.Text
-import qualified Github.Api as G
+import HH.App
+import qualified HH.Github.Api as G
 
 class Monad m => MonadGithub m where
   fetchUsername :: Text -> m (Either Text Text)

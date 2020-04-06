@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ea783589c11368049f66c24bfbe2ec52126e98fdd323754bea1565661ea3d307
+-- hash: c3c5e25d6778f924e5379d39d97e9b2377c0aa80de6c7af7f89449970789f077
 
 name:           hh
 version:        0.1.0.0
@@ -27,31 +27,31 @@ source-repository head
 
 library
   exposed-modules:
-      App
-      AppConfig
-      Command
-      Command.CloneRepos
-      Command.Create
-      Command.CreateBranch
-      Command.CreateTeam
-      Command.InitConfig
-      Command.Internal.Common
-      Command.Internal.Parser
-      Command.ShowRepos
-      Effect.Command
-      Effect.Config
-      Effect.Console
-      Effect.FileSystem
-      Effect.Git
-      Effect.Github
-      Env
-      Git
-      Github.Api
-      Github.Internal.GraphQl
-      Github.Internal.Rest
-      HH
-      UserConfig
-      Util
+      HH.App
+      HH.AppConfig
+      HH.Cli.Cli
+      HH.Cli.Command
+      HH.Cli.Command.CloneRepos
+      HH.Cli.Command.Create
+      HH.Cli.Command.CreateBranch
+      HH.Cli.Command.CreateTeam
+      HH.Cli.Command.InitConfig
+      HH.Cli.Command.Internal.Common
+      HH.Cli.Command.Internal.Parser
+      HH.Cli.Command.ShowRepos
+      HH.Effect.Command
+      HH.Effect.Config
+      HH.Effect.Console
+      HH.Effect.FileSystem
+      HH.Effect.Git
+      HH.Effect.Github
+      HH.Env
+      HH.Git.Git
+      HH.Github.Api
+      HH.Github.Internal.GraphQl
+      HH.Github.Internal.Rest
+      HH.Main
+      HH.UserConfig
   other-modules:
       Paths_hh
   hs-source-dirs:
@@ -61,7 +61,7 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
-    , dhall >=1.31.1
+    , dhall
     , directory
     , errors
     , exceptions
@@ -91,7 +91,7 @@ executable hh
       aeson
     , base >=4.7 && <5
     , bytestring
-    , dhall >=1.31.1
+    , dhall
     , directory
     , errors
     , exceptions
@@ -123,7 +123,7 @@ test-suite hh-test
       aeson
     , base >=4.7 && <5
     , bytestring
-    , dhall >=1.31.1
+    , dhall
     , directory
     , errors
     , exceptions
