@@ -11,7 +11,6 @@ module HH.Cli.Command.CreateBranch
 
 import Control.Monad.Reader
 import Data.Text (Text)
-import HH.AppConfig
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config
@@ -44,20 +43,22 @@ runCreateBranch
   => CreateBranchArgs -> m ()
 runCreateBranch (CreateBranchArgs {..}) = do
   env <- ask
-  let AppConfig{..} = appConfig env
-  response <- fetchAndFilterRepos configDir configName org regex
+  let conf = appConfig env
+  response <- fetchAndFilterRepos conf org regex
   case response of
-    Right repos -> mapM_ (mkBranch useHttps newBranch baseBranch) repos
-    Left err -> printLn $ "Error " <> err
+    Right repos ->
+      mapM_ (mkBranch useHttps newBranch baseBranch) repos
+    Left err ->
+      printLn $ "Error " <> err
 
 mkBranch
   :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGit m)
   => Bool -> Text -> Text -> RemoteRepo -> m ()
 mkBranch useHttps newBranch baseBranch repo = do
   env <- ask
-  let AppConfig{..} = appConfig env
-  conf <- getConfig configDir configName
-  let path = concatPath [absRootPath conf, nameWithOwner repo]
+  let conf = appConfig env
+  userConf <- getConfig conf
+  let path = concatPath [absRootPath userConf, nameWithOwner repo]
   isGit <- isGitDir path
   doBranch isGit path >> pushBranch path newBranch
   where

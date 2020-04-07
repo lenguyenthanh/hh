@@ -10,7 +10,6 @@ module HH.Cli.Command.ShowRepos
 
 import Control.Monad.Reader
 import Data.Text (Text)
-import HH.AppConfig
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config
@@ -36,8 +35,8 @@ runShowRepos
   => ShowRepArgs -> m ()
 runShowRepos (ShowRepArgs {..}) = do
   env <- ask
-  let AppConfig{..} = appConfig env
-  response <- fetchAndFilterRepos configDir configName org regex
+  let conf = appConfig env
+  response <- fetchAndFilterRepos conf org regex
   case response of
     Right repos -> mapM_ showRepo repos
     Left err -> printLn $ "Error " <> err

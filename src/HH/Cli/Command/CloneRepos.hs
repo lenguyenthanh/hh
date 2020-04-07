@@ -10,7 +10,6 @@ module HH.Cli.Command.CloneRepos
 
 import Control.Monad.Reader
 import Data.Text (Text)
-import HH.AppConfig
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config
@@ -39,8 +38,8 @@ runCloneRepos
   => CloneReposArgs -> m ()
 runCloneRepos (CloneReposArgs {..}) = do
   env <- ask
-  let AppConfig{..} = appConfig env
-  response <- fetchAndFilterRepos configDir configName org regex
+  let conf = appConfig env
+  response <- fetchAndFilterRepos conf org regex
   case response of
     Right repos ->
       mapM_ (cloneRepo useHttps) repos
@@ -52,9 +51,9 @@ cloneRepo
   => Bool -> RemoteRepo -> m ()
 cloneRepo useHttps repo = do
   env <- ask
-  let AppConfig{..} = appConfig env
-  conf <- getConfig configDir configName
-  let path = concatPath [absRootPath conf, nameWithOwner repo]
+  let conf = appConfig env
+  userConfig <- getConfig conf
+  let path = concatPath [absRootPath userConfig, nameWithOwner repo]
   _ <- clone url path
   printLn $ "Cloned " <> name repo <> " success"
   where

@@ -10,7 +10,6 @@ module HH.Cli.Command.CreateTeam
 
 import Control.Monad.Reader
 import Data.Text (Text, pack)
-import HH.AppConfig
 import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config
 import HH.Effect.Console
@@ -63,15 +62,15 @@ runCreateTeam
   => CreateTeamArgs -> m ()
 runCreateTeam (CreateTeamArgs {..}) = do
   env <- ask
-  let AppConfig{..} = appConfig env
-  conf <- getConfig configDir configName
+  let conf = appConfig env
+  userConfig <- getConfig conf
   let privacy = "secret"
   let createTeamArgs = CreateTeam { createTeamOrg = org
                                   , createTeamName = teamName
                                   , createTeamDescription = description
                                   , createTeamUsers = users
                                   , createTeamPrivacy = privacy
-                                  , createTeamToken = githubToken conf
+                                  , createTeamToken = githubToken userConfig
                                   }
   response <- createTeam createTeamArgs
   printLn.pack $ show response

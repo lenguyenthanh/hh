@@ -6,6 +6,7 @@ module HH.Cli.Command.Internal.Common
   where
 
 import Data.Text (Text, pack, unpack)
+import HH.AppConfig
 import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.Github
@@ -18,9 +19,9 @@ filterRepos (Just regex) xs = filter (\x -> (name x) =~ regex :: Bool) xs
 
 fetchAndFilterRepos
   :: (MonadConfig m, MonadConsole m, MonadGithub m)
-  => Text -> Text -> Text -> Maybe Text -> m (Either Text [RemoteRepo])
-fetchAndFilterRepos configDir configName org regex = do
-  conf <- getConfig configDir configName
+  => AppConfig -> Text -> Maybe Text -> m (Either Text [RemoteRepo])
+fetchAndFilterRepos conf org regex = do
+  conf <- getConfig conf
   let token = githubToken conf
   response <- fetchOrgRepos org token
   pure $ filterRepos regex <$> response

@@ -12,7 +12,6 @@ module HH.Cli.Command.InitConfig
 import Control.Monad.Reader
 import Data.Bifunctor (bimap)
 import Data.Text (Text, pack)
-import HH.AppConfig
 import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.FileSystem
@@ -54,23 +53,23 @@ runSaveConfig
   => InitArgs -> m ()
 runSaveConfig InitArgs {..} = do
   env <- ask
-  let AppConfig{..} = appConfig env
+  let conf = appConfig env
   createDirectoryIfMissing root
   either <- fetchUsername token
   case either of
     Left(err) ->
       printLn $ "Failed to verify token: " <> token <> " because of: " <> err
     Right(name) ->
-      saveConfig configDir configName UserConfig { absRootPath = root
-                                                 , githubToken = token
-                                                 , githubUsername = name
-                                                 }
+      saveConfig conf UserConfig { absRootPath = root
+                                 , githubToken = token
+                                 , githubUsername = name
+                                 }
 
 runShowConfig
   :: (MonadReader Env m, MonadConfig m, MonadConsole m)
   => m ()
 runShowConfig = do
   env <- ask
-  let AppConfig{..} = appConfig env
-  conf <- getConfig configDir configName
-  printLn.pack $ show conf
+  let conf = appConfig env
+  userConfig <- getConfig conf
+  printLn.pack $ show userConfig

@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module HH.UserConfig
     (UserConfig(..)
@@ -14,6 +13,7 @@ import Data.Aeson
 import qualified Data.ByteString.Lazy as LB
 import Data.Text
 import GHC.Generics
+import HH.AppConfig
 import qualified System.Directory as D
 import System.FilePath ((</>))
 
@@ -28,17 +28,18 @@ data UserConfig
 instance ToJSON UserConfig
 instance FromJSON UserConfig
 
-saveConfig :: Text -> Text -> UserConfig -> IO ()
-saveConfig dir name config =
-  userConfigPath dir name
+saveConfig :: AppConfig -> UserConfig -> IO ()
+saveConfig (AppConfig{..}) config =
+  userConfigPath configDir configName
     >>= (saveConfig' config)
   where
     saveConfig' :: UserConfig -> FilePath -> IO ()
     saveConfig' conf fPath = (LB.writeFile fPath) $ encode conf
 
 
-getConfig :: Text -> Text -> IO UserConfig
-getConfig dir name = userConfigPath dir name >>= getConfig'
+getConfig :: AppConfig -> IO UserConfig
+getConfig AppConfig{..}
+  = userConfigPath configDir configName >>= getConfig'
   where
     getConfig' :: FilePath -> IO UserConfig
     getConfig' fPath = do
@@ -47,8 +48,10 @@ getConfig dir name = userConfigPath dir name >>= getConfig'
         then do
             content <- LB.readFile fPath
             case eitherDecode content of
-              Left err -> throwString $ "Failed to decode config " <> err
-              Right config -> pure config
+              Left err ->
+                throwString $ "Failed to decode config " <> err
+              Right config ->
+                pure config
         else throwString "Config files does not exist. You may need to init it first."
 
 
