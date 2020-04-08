@@ -14,7 +14,6 @@ import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.Github
-import HH.Env
 import Options.Applicative
 
 data CreateTeamArgs
@@ -58,19 +57,17 @@ usersParser = option str
     (long "users" <> short 'u' <> metavar "list" <> help "List of users for the new team")
 
 runCreateTeam
-  :: (MonadReader Env m, MonadConsole m, MonadConfig m, MonadGithub m)
+  :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m)
   => CreateTeamArgs -> m ()
 runCreateTeam (CreateTeamArgs {..}) = do
-  env <- ask
-  let conf = appConfig env
-  userConfig <- getConfig conf
+  conf <- ask
   let privacy = "secret"
   let createTeamArgs = CreateTeam { createTeamOrg = org
                                   , createTeamName = teamName
                                   , createTeamDescription = description
                                   , createTeamUsers = users
                                   , createTeamPrivacy = privacy
-                                  , createTeamToken = githubToken userConfig
+                                  , createTeamToken = githubToken conf
                                   }
   response <- createTeam createTeamArgs
   printLn.pack $ show response

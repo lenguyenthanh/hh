@@ -8,11 +8,10 @@ module HH.App
 
 import Control.Monad.IO.Class
 import Control.Monad.Reader
-import HH.Env
 
-newtype AppM m a =
-    AppM { unAppM :: ReaderT Env m a }
-    deriving (Functor, Applicative, Monad, MonadIO, MonadTrans, MonadReader Env)
+newtype AppM r m a =
+    AppM { unAppM :: ReaderT r m a }
+    deriving (Functor, Applicative, Monad, MonadIO, MonadTrans, MonadReader r)
 
-runAppM :: Env -> AppM m a -> m a
+runAppM :: r -> AppM r m a -> m a
 runAppM env app = runReaderT (unAppM app) env

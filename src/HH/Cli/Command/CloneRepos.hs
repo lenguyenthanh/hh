@@ -16,7 +16,6 @@ import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.Git
 import HH.Effect.Github
-import HH.Env
 import Options.Applicative
 
 data CloneReposArgs
@@ -34,11 +33,10 @@ cloneReposArgsParser = CloneReposArgs
                <*> useHttpsParser
 
 runCloneRepos
-  :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m)
+  :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m, MonadGit m)
   => CloneReposArgs -> m ()
 runCloneRepos (CloneReposArgs {..}) = do
-  env <- ask
-  let conf = appConfig env
+  conf <- ask
   response <- fetchAndFilterRepos conf org regex
   case response of
     Right repos ->
@@ -47,13 +45,11 @@ runCloneRepos (CloneReposArgs {..}) = do
       printLn $ "Error " <> err
 
 cloneRepo
-  :: (MonadReader Env m, MonadConfig m, MonadGit m, MonadConsole m)
+  :: (MonadReader UserConfig m, MonadGit m, MonadConsole m)
   => Bool -> RemoteRepo -> m ()
 cloneRepo useHttps repo = do
-  env <- ask
-  let conf = appConfig env
-  userConfig <- getConfig conf
-  let path = concatPath [absRootPath userConfig, nameWithOwner repo]
+  conf <- ask
+  let path = concatPath [absRootPath conf, nameWithOwner repo]
   _ <- clone url path
   printLn $ "Cloned " <> name repo <> " success"
   where

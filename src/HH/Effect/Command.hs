@@ -21,7 +21,7 @@ class Monad m => MonadCommand m where
 
 
 instance MonadCommand m => MonadCommand (ReaderT r m)
-instance MonadCommand m => MonadCommand (AppM m)
+instance MonadCommand m => MonadCommand (AppM e m)
 
 instance MonadCommand IO where
   getCommand = commands

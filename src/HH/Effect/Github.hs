@@ -30,7 +30,7 @@ class Monad m => MonadGithub m where
   fetchOrgRepos org token = lift $ fetchOrgRepos org token
 
 instance MonadGithub m => MonadGithub (ReaderT r m)
-instance MonadGithub m => MonadGithub (AppM m)
+instance MonadGithub m => MonadGithub (AppM e m)
 
 instance MonadGithub IO where
   fetchUsername = G.fetchUsername

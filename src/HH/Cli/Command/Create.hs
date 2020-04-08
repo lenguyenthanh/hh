@@ -14,7 +14,6 @@ import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.Git
 import HH.Effect.Github
-import HH.Env
 import Options.Applicative
 
 data CreateArgs
@@ -36,7 +35,9 @@ createArgsParser = hsubparser
         )
     )
 
-runCreate :: (MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m, MonadReader Env m) => CreateArgs -> m ()
+runCreate
+  :: (MonadConsole m, MonadGithub m, MonadGit m, MonadReader UserConfig m)
+  => CreateArgs -> m ()
 runCreate (Team args) = runCreateTeam args
 runCreate (Branch args) = runCreateBranch args
 

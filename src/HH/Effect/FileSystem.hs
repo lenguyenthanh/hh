@@ -22,7 +22,7 @@ class Monad m => MonadFileSystem m where
   createDirectoryIfMissing = lift . createDirectoryIfMissing
 
 instance MonadFileSystem m => MonadFileSystem (ReaderT r m)
-instance MonadFileSystem m => MonadFileSystem (AppM m)
+instance MonadFileSystem m => MonadFileSystem (AppM e m)
 
 instance MonadFileSystem IO where
   createDirectoryIfMissing = (D.createDirectoryIfMissing True). unpack

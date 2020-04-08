@@ -4,7 +4,6 @@
 module HH.Cli.Command.InitConfig
     ( InitArgs
     , initArgsParser
-    , runShowConfig
     , runSaveConfig
     )
   where
@@ -64,12 +63,3 @@ runSaveConfig InitArgs {..} = do
                                  , githubToken = token
                                  , githubUsername = name
                                  }
-
-runShowConfig
-  :: (MonadReader Env m, MonadConfig m, MonadConsole m)
-  => m ()
-runShowConfig = do
-  env <- ask
-  let conf = appConfig env
-  userConfig <- getConfig conf
-  printLn.pack $ show userConfig

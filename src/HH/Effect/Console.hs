@@ -18,7 +18,7 @@ class Monad m => MonadConsole m where
   printLn = lift . printLn
 
 instance MonadConsole m => MonadConsole (ReaderT r m)
-instance MonadConsole m => MonadConsole (AppM m)
+instance MonadConsole m => MonadConsole (AppM e m)
 
 instance MonadConsole IO where
   printLn = putStrLn . unpack

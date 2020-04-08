@@ -25,7 +25,7 @@ mainIO = do
 main
   :: (MonadConfig m, MonadConsole m, MonadGithub m
     , MonadGit m, MonadCommand m, MonadFileSystem m)
-  => AppM m ()
+  => AppM Env m ()
 main = do
   command <- getCommand
   runCommand command

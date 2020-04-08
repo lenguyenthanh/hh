@@ -12,10 +12,9 @@ import Control.Monad.Reader
 import Data.Text (Text)
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
-import HH.Effect.Config
+import HH.Effect.Config (UserConfig)
 import HH.Effect.Console
 import HH.Effect.Github
-import HH.Env
 import Options.Applicative
 
 data ShowRepArgs
@@ -31,11 +30,10 @@ showRepoArgsParser = ShowRepArgs
                <*> optional regexParser
 
 runShowRepos
-  :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGithub m)
+  :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m)
   => ShowRepArgs -> m ()
 runShowRepos (ShowRepArgs {..}) = do
-  env <- ask
-  let conf = appConfig env
+  conf <- ask
   response <- fetchAndFilterRepos conf org regex
   case response of
     Right repos -> mapM_ showRepo repos

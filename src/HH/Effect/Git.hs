@@ -31,7 +31,7 @@ class Monad m => MonadGit m where
   pushBranch path branch = lift $ pushBranch path branch
 
 instance MonadGit m => MonadGit (ReaderT r m)
-instance MonadGit m => MonadGit (AppM m)
+instance MonadGit m => MonadGit (AppM e m)
 
 instance MonadGit IO where
   clone = G.clone

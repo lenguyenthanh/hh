@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c3c5e25d6778f924e5379d39d97e9b2377c0aa80de6c7af7f89449970789f077
+-- hash: d03f74237e0ae7dada6de24fe16cebfbdcbccc46e894becb2ec191b69f5ed2f3
 
 name:           hh
 version:        0.1.0.0
@@ -38,6 +38,7 @@ library
       HH.Cli.Command.InitConfig
       HH.Cli.Command.Internal.Common
       HH.Cli.Command.Internal.Parser
+      HH.Cli.Command.ShowConfig
       HH.Cli.Command.ShowRepos
       HH.Effect.Command
       HH.Effect.Config

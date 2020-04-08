@@ -27,7 +27,7 @@ class Monad m => MonadConfig m where
   saveConfig conf = lift . saveConfig conf
 
 instance MonadConfig m => MonadConfig (ReaderT r m)
-instance MonadConfig m => MonadConfig (AppM m)
+instance MonadConfig m => MonadConfig (AppM e m)
 
 instance MonadConfig IO where
   saveConfig = U.saveConfig

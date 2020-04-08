@@ -17,7 +17,6 @@ import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.Git
 import HH.Effect.Github
-import HH.Env
 import Options.Applicative
 
 data CreateBranchArgs
@@ -39,11 +38,10 @@ createBranchArgsParser = CreateBranchArgs
                <*> useHttpsParser
 
 runCreateBranch
-  :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGithub m, MonadGit m)
+  :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m, MonadGit m)
   => CreateBranchArgs -> m ()
 runCreateBranch (CreateBranchArgs {..}) = do
-  env <- ask
-  let conf = appConfig env
+  conf <- ask
   response <- fetchAndFilterRepos conf org regex
   case response of
     Right repos ->
@@ -52,13 +50,11 @@ runCreateBranch (CreateBranchArgs {..}) = do
       printLn $ "Error " <> err
 
 mkBranch
-  :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGit m)
+  :: (MonadReader UserConfig m, MonadConsole m, MonadGit m)
   => Bool -> Text -> Text -> RemoteRepo -> m ()
 mkBranch useHttps newBranch baseBranch repo = do
-  env <- ask
-  let conf = appConfig env
-  userConf <- getConfig conf
-  let path = concatPath [absRootPath userConf, nameWithOwner repo]
+  conf <- ask
+  let path = concatPath [absRootPath conf, nameWithOwner repo]
   isGit <- isGitDir path
   doBranch isGit path >> pushBranch path newBranch
   where
