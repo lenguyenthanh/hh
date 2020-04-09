@@ -50,8 +50,10 @@ cloneRepo
 cloneRepo useHttps repo = do
   conf <- ask
   let path = concatPath [absRootPath conf, nameWithOwner repo]
-  _ <- clone url path
-  printLn $ "Cloned " <> name repo <> " success"
+  success <- clone url path
+  if success
+      then printLn $ "Cloned " <> name repo <> " success"
+      else printLn $ "Failed to clone " <> name repo
   where
     url = if useHttps
             then httpsUrl repo

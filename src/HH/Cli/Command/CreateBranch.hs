@@ -56,7 +56,10 @@ mkBranch useHttps newBranch baseBranch repo = do
   conf <- ask
   let path = concatPath [absRootPath conf, nameWithOwner repo]
   isGit <- isGitDir path
-  doBranch isGit path >> pushBranch path newBranch
+  success <- doBranch isGit path >> pushBranch path newBranch
+  if success
+      then printLn $ "Created " <> newBranch <> " success"
+      else printLn $ "Failed to create " <> newBranch
   where
     url = if useHttps
             then httpsUrl repo

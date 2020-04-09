@@ -19,7 +19,6 @@ data Command
   deriving (Show)
 
 
-
 commandParser :: Parser Command
 commandParser = hsubparser
     (  command
@@ -38,7 +37,7 @@ commandParser = hsubparser
                 (progDesc "Show all repos in an organization that maches a regex")
           )
     <> command
-          "clone-repos"
+          "clone"
           (info cloneReposCommand
                 (progDesc "Clone all repos in an organization that matches a regex")
           )

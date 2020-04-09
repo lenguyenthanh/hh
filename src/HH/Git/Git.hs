@@ -9,22 +9,23 @@ module HH.Git.Git
   where
 
 import Data.Text
-import Shellmet
+import qualified Turtle as T
 
-clone :: Text -> Text -> IO ()
-clone url path = "git" ["clone", url, path]
+clone :: Text -> Text -> IO Bool
+clone url path = run "git" ["clone", url, path]
 
-newBranch :: Text -> Text -> Text -> IO ()
-newBranch path new base =
-  "git" ["-C", path, "branch", "-c", base, new]
+newBranch :: Text -> Text -> Text -> IO Bool
+newBranch path new base = run "git" ["-C", path, "branch", "-c", base, new]
 
 isGitDir :: Text -> IO Bool
-isGitDir path = run $
-  "git" ["-C", path, "rev-parse", "--is-inside-work-tree"]
+isGitDir path = run "git" ["-C", path, "rev-parse", "--is-inside-work-tree"]
 
-pushBranch :: Text -> Text -> IO ()
-pushBranch path branch =
-  "git" ["-C", path, "push", "origin", branch]
+pushBranch :: Text -> Text -> IO Bool
+pushBranch path branch = run "git" ["-C", path, "push", "origin", branch]
 
-run :: IO () -> IO Bool
-run io = io >> pure True $? pure False
+isSuccess :: T.ExitCode -> Bool
+isSuccess T.ExitSuccess = True
+isSuccess (T.ExitFailure _) = False
+
+run :: T.MonadIO io => Text -> [Text] -> io Bool
+run cmd args = isSuccess <$> T.proc cmd args T.empty

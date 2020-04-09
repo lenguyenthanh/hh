@@ -20,11 +20,11 @@ runCommand
   :: (MonadConfig m, MonadConsole m, MonadGithub m
      , MonadGit m, MonadFileSystem m, MonadReader Env m)
   => Command -> m ()
+runCommand (CloneRepos args) = embedConfig $ runCloneRepos args
+runCommand (Create args) = embedConfig $ runCreate args
 runCommand (Init args) = runSaveConfig args
 runCommand ShowConfig = embedConfig runShowConfig
 runCommand (ShowRepos args) = embedConfig $ runShowRepos args
-runCommand (CloneRepos args) = embedConfig $ runCloneRepos args
-runCommand (Create args) = embedConfig $ runCreate args
 
 userConfig :: (MonadConfig m) => Env -> m UserConfig
 userConfig = getConfig . appConfig
