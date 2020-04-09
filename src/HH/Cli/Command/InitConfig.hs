@@ -53,13 +53,17 @@ runSaveConfig
 runSaveConfig InitArgs {..} = do
   env <- ask
   let conf = appConfig env
-  createDirectoryIfMissing root
-  either <- fetchUsername token
-  case either of
-    Left(err) ->
-      printLn $ "Failed to verify token: " <> token <> " because of: " <> err
-    Right(name) ->
-      saveConfig conf UserConfig { absRootPath = root
-                                 , githubToken = token
-                                 , githubUsername = name
-                                 }
+  result <- createDirectoryIfMissing root
+  case result of
+    Left exception ->
+      printLn $ "Failed to create root directory " <> root <> "\n" <> (pack $ show exception)
+    Right _ -> do
+      either <- fetchUsername token
+      case either of
+        Left err ->
+          printLn $ "Failed to verify token: " <> token <> " because of: " <> err
+        Right name ->
+          saveConfig conf UserConfig { absRootPath = root
+                                    , githubToken = token
+                                    , githubUsername = name
+                                    }
