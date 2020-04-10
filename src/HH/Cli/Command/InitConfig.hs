@@ -8,9 +8,12 @@ module HH.Cli.Command.InitConfig
     )
   where
 
+import Control.Error
+import Control.Exception.Safe (IOException)
 import Control.Monad.Reader
 import Data.Bifunctor (bimap)
 import Data.Text (Text, pack)
+import HH.AppConfig
 import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.FileSystem
@@ -45,31 +48,34 @@ parseRoot = pack <$> eitherReader parseAbsDir
 parseAbsDir :: FilePath -> Either String String
 parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f
 
--- Process command
-
 runSaveConfig
   :: (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGithub m, MonadFileSystem m)
   => InitArgs -> m ()
-runSaveConfig InitArgs {..} = do
+runSaveConfig args = do
   env <- ask
   let conf = appConfig env
-  result <- createDirectoryIfMissing root
+  result <- runExceptT $ verifyAndSave conf args
   case result of
-    Left e ->
-      printLn $ "Failed to create root directory " <> root <> "\n" <> (pack $ show e)
-    Right _ -> do
-      either <- fetchUsername token
-      case either of
-        Left err ->
-          printLn $ "Failed to verify token: " <> token <> " because of: " <> err
-        Right name -> do
-          saveResult <- saveConfig conf UserConfig { absRootPath = root
-                                                   , githubToken = token
-                                                   , githubUsername = name
-                                                   }
-          case saveResult of
-            Right _ -> printLn $ "Saved configuration successfully"
-            Left e -> printLn $ "Failed to save your configuration" <> "\n" <> (pack $ show e)
+    Right _ -> printLn $ "Saved configuration successfully"
+    Left err -> printLn $ showError err
 
--- Use adhoc type for this
--- or validation applicative
+verifyAndSave
+  :: (MonadConfig m, MonadGithub m, MonadFileSystem m)
+  => AppConfig -> InitArgs -> ExceptT SaveConfigError m ()
+verifyAndSave conf (InitArgs{..}) = do
+  fmapLT (CreateDirectoryError root) $ createDirectoryIfMissing root
+  name <- fmapLT (VerifyTokenError token) $ fetchUsername token
+  fmapLT SaveConfigError . saveConfig conf $ UserConfig { absRootPath = root
+                                                        , githubToken = token
+                                                        , githubUsername = name
+                                                        }
+
+data SaveConfigError
+  = CreateDirectoryError Text IOException
+  | SaveConfigError IOException
+  | VerifyTokenError Text Text
+
+showError :: SaveConfigError -> Text
+showError (CreateDirectoryError root e) = "Failed to create root directory " <> root <> "\n" <> (pack $ show e)
+showError (SaveConfigError e) = "Failed to save your configuration" <> "\n" <> (pack $ show e)
+showError (VerifyTokenError token msg) = "Failed to verify token: " <> token <> " because of: " <> msg

@@ -18,7 +18,7 @@ import qualified HH.UserConfig as U
 
 class Monad m => MonadConfig m where
   getConfig :: AppConfig -> m (Either U.GetConfigError U.UserConfig)
-  saveConfig :: AppConfig -> U.UserConfig -> m (Either IOException ())
+  saveConfig :: AppConfig -> U.UserConfig -> ExceptT IOException m ()
 
   default getConfig
     :: (MonadTrans t, MonadConfig m', m ~ t m')
@@ -27,12 +27,12 @@ class Monad m => MonadConfig m where
 
   default saveConfig
     :: (MonadTrans t, MonadConfig m', m ~ t m')
-    => AppConfig -> U.UserConfig -> m (Either IOException ())
-  saveConfig conf = lift . saveConfig conf
+    => AppConfig -> U.UserConfig -> ExceptT IOException m ()
+  saveConfig conf = ExceptT . lift . runExceptT . saveConfig conf
 
 instance MonadConfig m => MonadConfig (ReaderT r m)
 instance MonadConfig m => MonadConfig (AppM e m)
 
 instance MonadConfig IO where
-  saveConfig appConf = runExceptT. U.saveConfig appConf
+  saveConfig appConf = U.saveConfig appConf
   getConfig = runExceptT. U.getConfig

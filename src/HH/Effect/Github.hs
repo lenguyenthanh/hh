@@ -10,18 +10,19 @@ module HH.Effect.Github
     )
   where
 
+import Control.Monad.Except
 import Control.Monad.Reader
 import Data.Text
 import HH.App
 import qualified HH.Github.Api as G
 
 class Monad m => MonadGithub m where
-  fetchUsername :: Text -> m (Either Text Text)
+  fetchUsername :: Text -> ExceptT Text m Text
   createTeam :: G.CreateTeam -> m G.CreateTeamResponse
   fetchOrgRepos :: Text -> Text -> m (Either Text [G.RemoteRepo])
 
-  default fetchUsername :: (MonadTrans t, MonadGithub m', m ~ t m') => Text -> m (Either Text Text)
-  fetchUsername = lift.fetchUsername
+  default fetchUsername :: (MonadTrans t, MonadGithub m', m ~ t m') => Text -> ExceptT Text m Text
+  fetchUsername = ExceptT . lift . runExceptT . fetchUsername
 
   default createTeam :: (MonadTrans t, MonadGithub m', m ~ t m') => G.CreateTeam -> m G.CreateTeamResponse
   createTeam = lift.createTeam

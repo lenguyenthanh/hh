@@ -14,10 +14,9 @@ module HH.Github.Internal.GraphQl
     )
   where
 
-import Control.Error.Safe (justErr)
-import Control.Error.Util (hush)
+import Control.Error
 import Control.Monad ((<=<))
-import Data.Bifunctor (bimap, first)
+import Data.Bifunctor (first)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy.Char8 as BL
 import Data.Morpheus.Client (Fetch(..), defineByDocumentFile, gql)
@@ -92,14 +91,11 @@ getRepos = justErr "Invalid Response" .
 getPageInfo :: OrgRepos -> Maybe OrganizationRepositoriesPageInfoPageInfo
 getPageInfo = pure.pageInfo.repositories <=< organization
 
-fetchUsername :: Text -> IO (Either Text Text)
-fetchUsername token = do
-  login <- fetchLogin $ encodeUtf8 token
-  pure $ bimap pack username login
+fetchUsername :: Text -> ExceptT Text IO Text
+fetchUsername = bimapExceptT pack username . fetchLogin. encodeUtf8
 
-
-fetchLogin :: BS.ByteString -> IO (Either String Login)
-fetchLogin token = fetch (resolver token) ()
+fetchLogin :: BS.ByteString -> ExceptT String IO Login
+fetchLogin token = ExceptT $ fetch (resolver token) ()
 
 username :: Login -> Text
 username = login . viewer
