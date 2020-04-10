@@ -19,6 +19,7 @@ import GHC.Generics
 import HH.AppConfig
 import qualified System.Directory as D
 import System.FilePath ((</>))
+import System.FilePath.Posix (takeDirectory)
 
 data UserConfig
   = UserConfig
@@ -34,6 +35,7 @@ instance FromJSON UserConfig
 saveConfig :: AppConfig -> UserConfig -> ExceptT IOException IO ()
 saveConfig (AppConfig{..}) config = do
   fPath <- userConfigPath configDir configName
+  tryIO . D.createDirectoryIfMissing True . takeDirectory $ fPath
   saveConfWithPath fPath config
 
 saveConfWithPath :: FilePath -> UserConfig -> ExceptT IOException IO ()
@@ -66,5 +68,4 @@ data GetConfigError
 userConfigPath :: Text -> Text -> ExceptT IOException IO FilePath
 userConfigPath dir name = do
       path <- tryIO . D.getXdgDirectory D.XdgConfig . unpack $ dir
-      tryIO $ D.createDirectoryIfMissing True path
       pure $ path </> unpack name
