@@ -6,9 +6,9 @@ module HH.App
     )
   where
 
+import Control.Exception.Safe
 import Control.Monad.IO.Class
 import Control.Monad.Reader
-import Control.Exception.Safe
 
 newtype AppM r m a =
     AppM { unAppM :: ReaderT r m a }

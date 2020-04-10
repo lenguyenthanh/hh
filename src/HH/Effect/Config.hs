@@ -1,5 +1,5 @@
-{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE GADTs #-}
 
 module HH.Effect.Config
@@ -9,12 +9,12 @@ module HH.Effect.Config
     )
   where
 
+import Control.Exception.Safe (IOException)
+import Control.Monad.Except
 import Control.Monad.Reader
 import HH.App
 import HH.AppConfig
 import qualified HH.UserConfig as U
-import Control.Exception.Safe (IOException)
-import Control.Monad.Except
 
 class Monad m => MonadConfig m where
   getConfig :: AppConfig -> m (Either U.GetConfigError U.UserConfig)

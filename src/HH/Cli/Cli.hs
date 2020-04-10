@@ -3,8 +3,8 @@
 
 module HH.Cli.Cli where
 
-import Control.Exception.Safe
 import Control.Monad.Reader
+import Data.Text
 import HH.App
 import HH.Cli.Command
 import HH.Cli.Command.CloneRepos
@@ -21,8 +21,7 @@ import HH.Env
 
 runCommand
   :: (MonadConfig m, MonadConsole m, MonadGithub m
-     , MonadGit m, MonadFileSystem m, MonadReader Env m
-     , MonadThrow m)
+     , MonadGit m, MonadFileSystem m, MonadReader Env m)
   => Command -> m ()
 runCommand (CloneRepos args) = embedConfig $ runCloneRepos args
 runCommand (Create args) = embedConfig $ runCreate args
@@ -30,22 +29,20 @@ runCommand (Init args) = runSaveConfig args
 runCommand ShowConfig = embedConfig runShowConfig
 runCommand (ShowRepos args) = embedConfig $ runShowRepos args
 
-embedConfig :: (MonadThrow m, MonadConsole m, MonadConfig m, MonadReader Env m) => AppM UserConfig m () -> m ()
+embedConfig :: (MonadConsole m, MonadConfig m, MonadReader Env m) => AppM UserConfig m () -> m ()
 embedConfig n = do
   env <- ask
   conf <- userConfig env
-  runAppM conf n
-
-userConfig :: (MonadThrow m, MonadConsole m, MonadConfig m) => Env -> m UserConfig
-userConfig env = do
-  result <- getConfig $ appConfig env
-  case result of
-    Right conf ->
-      pure conf
+  case conf of
+    Right conf -> do
+      runAppM conf n
     Left err ->
-      throwString $ getUserConfError err
+      printLn.pack.getUserConfError $ err
+
+userConfig :: (MonadConsole m, MonadConfig m) => Env -> m (Either GetConfigError UserConfig)
+userConfig env = getConfig $ appConfig env
 
 getUserConfError :: GetConfigError -> String
-getUserConfError (IOEx ex) = "Failed to read config file" <> show ex
+getUserConfError (IOError ex) = "Failed to read config file" <> show ex
 getUserConfError (DecodeError err) = "Failed to read the config file. Format of config file is bad." <> err
-getUserConfError ConfigFileNotExist = "Failed to read the config file becaues config file is not exist. You may need to init it with init command first."
+getUserConfError FileNotExist = "Failed to read the config file becaues config file is not exist. You may need to init it with init command first."

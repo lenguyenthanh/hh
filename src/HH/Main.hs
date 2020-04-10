@@ -5,6 +5,7 @@ module HH.Main
     )
   where
 
+import Control.Exception.Safe
 import HH.App
 import HH.AppConfig
 import HH.Cli.Cli
@@ -15,7 +16,6 @@ import HH.Effect.FileSystem
 import HH.Effect.Git
 import HH.Effect.Github
 import HH.Env
-import Control.Exception.Safe
 
 mainIO :: IO ()
 mainIO = do

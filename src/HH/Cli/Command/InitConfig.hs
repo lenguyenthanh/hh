@@ -55,8 +55,8 @@ runSaveConfig InitArgs {..} = do
   let conf = appConfig env
   result <- createDirectoryIfMissing root
   case result of
-    Left exception ->
-      printLn $ "Failed to create root directory " <> root <> "\n" <> (pack $ show exception)
+    Left e ->
+      printLn $ "Failed to create root directory " <> root <> "\n" <> (pack $ show e)
     Right _ -> do
       either <- fetchUsername token
       case either of

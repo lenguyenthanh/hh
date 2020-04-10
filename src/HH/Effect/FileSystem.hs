@@ -6,11 +6,11 @@ module HH.Effect.FileSystem
     )
   where
 
+import Control.Exception.Safe
 import Control.Monad.Reader
 import Data.Text
 import HH.App
 import qualified System.Directory as D
-import Control.Exception.Safe
 
 -- | A class of monads that can interact with the filesystem.
 class Monad m => MonadFileSystem m where
