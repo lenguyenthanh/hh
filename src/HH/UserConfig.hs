@@ -1,14 +1,16 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module HH.UserConfig
     (UserConfig(..)
     , saveConfig
     , getConfig
+    , GetConfigError(..)
     )
   where
 
-import Control.Exception.Safe
+import Control.Exception.Safe (IOException)
 import Data.Aeson
 import qualified Data.ByteString.Lazy as LB
 import Data.Text
@@ -16,6 +18,8 @@ import GHC.Generics
 import HH.AppConfig
 import qualified System.Directory as D
 import System.FilePath ((</>))
+import Control.Monad.Except
+import Control.Error
 
 data UserConfig
   = UserConfig
@@ -28,35 +32,40 @@ data UserConfig
 instance ToJSON UserConfig
 instance FromJSON UserConfig
 
-saveConfig :: AppConfig -> UserConfig -> IO ()
-saveConfig (AppConfig{..}) config =
-  userConfigPath configDir configName
-    >>= (saveConfig' config)
-  where
-    saveConfig' :: UserConfig -> FilePath -> IO ()
-    saveConfig' conf fPath = (LB.writeFile fPath) $ encode conf
+saveConfig :: AppConfig -> UserConfig -> ExceptT IOException IO ()
+saveConfig (AppConfig{..}) config = do
+  fPath <- userConfigPath configDir configName
+  sConfig fPath config
+    where
+      sConfig :: FilePath -> UserConfig -> ExceptT IOException IO ()
+      sConfig fPath = tryIO . LB.writeFile fPath . encode
 
-
-getConfig :: AppConfig -> IO UserConfig
-getConfig AppConfig{..}
-  = userConfigPath configDir configName >>= getConfig'
+getConfig :: AppConfig -> ExceptT GetConfigError IO UserConfig
+getConfig AppConfig{..} =  do
+  fPath <- fmapLT IOEx $ userConfigPath configDir configName
+  getConfig' fPath
   where
-    getConfig' :: FilePath -> IO UserConfig
+    getConfig' :: FilePath -> ExceptT GetConfigError IO UserConfig
     getConfig' fPath = do
-      exist <- D.doesFileExist fPath
+      exist <- fmapLT IOEx (tryIO $ D.doesFileExist fPath)
       if exist
         then do
-            content <- LB.readFile fPath
+            content <- fmapLT IOEx (tryIO $ LB.readFile fPath)
             case eitherDecode content of
               Left err ->
-                throwString $ "Failed to decode config " <> err
+                throwE $ DecodeError err
               Right config ->
                 pure config
-        else throwString "Config files does not exist. You may need to init it first."
+        else throwE ConfigFileNotExist
 
+data GetConfigError
+  = ConfigFileNotExist
+  | DecodeError String
+  | IOEx IOException
+  deriving (Show, Eq)
 
-userConfigPath :: Text -> Text -> IO FilePath
+userConfigPath :: Text -> Text -> ExceptT IOException IO FilePath
 userConfigPath dir name = do
-      path <- D.getXdgDirectory D.XdgConfig $ unpack dir
-      D.createDirectoryIfMissing True path
+      path <- tryIO . D.getXdgDirectory D.XdgConfig . unpack $ dir
+      tryIO $ D.createDirectoryIfMissing True path
       pure $ path </> unpack name

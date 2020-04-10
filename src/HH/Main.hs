@@ -15,6 +15,7 @@ import HH.Effect.FileSystem
 import HH.Effect.Git
 import HH.Effect.Github
 import HH.Env
+import Control.Exception.Safe
 
 mainIO :: IO ()
 mainIO = do
@@ -24,7 +25,8 @@ mainIO = do
 
 main
   :: (MonadConfig m, MonadConsole m, MonadGithub m
-    , MonadGit m, MonadCommand m, MonadFileSystem m)
+    , MonadGit m, MonadCommand m, MonadFileSystem m
+    , MonadThrow m)
   => AppM Env m ()
 main = do
   command <- getCommand

@@ -62,8 +62,14 @@ runSaveConfig InitArgs {..} = do
       case either of
         Left err ->
           printLn $ "Failed to verify token: " <> token <> " because of: " <> err
-        Right name ->
-          saveConfig conf UserConfig { absRootPath = root
-                                    , githubToken = token
-                                    , githubUsername = name
-                                    }
+        Right name -> do
+          saveResult <- saveConfig conf UserConfig { absRootPath = root
+                                                   , githubToken = token
+                                                   , githubUsername = name
+                                                   }
+          case saveResult of
+            Right _ -> printLn $ "Saved configuration successfully"
+            Left e -> printLn $ "Failed to save your configuration" <> "\n" <> (pack $ show e)
+
+-- Use adhoc type for this
+-- or validation applicative
