@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fad9f78f31666207ba4f8ee9f79c813319c087468f7cd292583eb940ea5414ff
+-- hash: 1050a5c7b39b866a0a658ff89be75a7857c7d15390d8b3e645acd2d817c22227
 
 name:           hh
 version:        0.1.0.0
@@ -53,6 +53,7 @@ library
       HH.Github.Internal.Rest
       HH.Main
       HH.UserConfig
+      System.FilePath.Extended
   other-modules:
       Paths_hh
   hs-source-dirs:
