@@ -66,7 +66,9 @@ runCreateTeam
   => CreateTeamArgs -> m ()
 runCreateTeam (CreateTeamArgs {..}) = do
   conf <- ask
-  let privacy = "secret"
+  let privacy = if secret
+                  then "secret"
+                  else "closed"
   let createTeamArgs = CreateTeam { org = org
                                   , name = teamName
                                   , description = description
