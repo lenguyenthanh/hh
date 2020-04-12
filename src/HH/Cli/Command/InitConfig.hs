@@ -73,9 +73,9 @@ verifyAndSave conf (InitArgs{..}) = do
 data SaveConfigError
   = CreateDirectoryError Text IOException
   | SaveConfigError IOException
-  | VerifyTokenError Text Text
+  | VerifyTokenError Text GQLError
 
 showError :: SaveConfigError -> Text
 showError (CreateDirectoryError root e) = "Failed to create root directory " <> root <> "\n" <> (pack $ show e)
 showError (SaveConfigError e) = "Failed to save your configuration" <> "\n" <> (pack $ show e)
-showError (VerifyTokenError token msg) = "Failed to verify token: " <> token <> " because of: " <> msg
+showError (VerifyTokenError token msg) = "Failed to verify token: " <> token <> " because of: " <> (pack.show $ msg)

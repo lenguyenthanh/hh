@@ -8,7 +8,9 @@ module HH.Cli.Command.ShowRepos
     )
   where
 
+import Control.Monad.Except
 import Control.Monad.Reader
+import Data.Text (pack)
 import Data.Text (Text)
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
@@ -34,10 +36,12 @@ runShowRepos
   => ShowRepArgs -> m ()
 runShowRepos (ShowRepArgs {..}) = do
   conf <- ask
-  response <- fetchAndFilterRepos conf org regex
+  response <- runExceptT $ fetchAndFilterRepos conf org regex
   case response of
-    Right repos -> mapM_ showRepo repos
-    Left err -> printLn $ "Error " <> err
+    Right repos ->
+      mapM_ showRepo repos
+    Left err ->
+      printLn $ "Error " <> (pack.show $ err)
 
 showRepo :: MonadConsole m => RemoteRepo -> m ()
 showRepo repo = printLn $

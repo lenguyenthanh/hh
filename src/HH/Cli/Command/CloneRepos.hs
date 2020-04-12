@@ -8,8 +8,10 @@ module HH.Cli.Command.CloneRepos
     )
   where
 
+import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader
 import Data.Text (Text)
+import Data.Text (pack)
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config
@@ -38,12 +40,12 @@ runCloneRepos
   => CloneReposArgs -> m ()
 runCloneRepos (CloneReposArgs {..}) = do
   conf <- ask
-  response <- fetchAndFilterRepos conf org regex
+  response <- runExceptT $ fetchAndFilterRepos conf org regex
   case response of
     Right repos ->
       mapM_ (cloneRepo useHttps) repos
     Left err ->
-      printLn $ "Error " <> err
+      printLn $ "Error " <> (pack.show $ err)
 
 cloneRepo
   :: (MonadReader UserConfig m, MonadGit m, MonadConsole m)

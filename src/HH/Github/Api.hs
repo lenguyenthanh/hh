@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module HH.Github.Api
@@ -7,11 +8,12 @@ module HH.Github.Api
     , httpsUrl
     , fetchOrgRepos
     , GQL.fetchUsername
+    , GQL.GQLError(..)
     , Rest.createTeam
     )
   where
 
-import Control.Error.Safe (justErr)
+import Control.Error
 import qualified Data.Morpheus.Types as M
 import Data.Text
 import qualified HH.Github.Internal.GraphQl as GQL
@@ -26,10 +28,14 @@ data RemoteRepo
     }
   deriving (Show)
 
-fetchOrgRepos :: Text -> Text -> IO (Either Text [RemoteRepo])
+fetchOrgRepos :: Text -> Text -> ExceptT GQL.GQLError IO [RemoteRepo]
 fetchOrgRepos org token = do
   response <- GQL.fetchRepositories org token
-  pure $ response >>= (justErr "Invalid Response") . sequence . (fmap toRemoteRepo)
+  case sequence . fmap toRemoteRepo $ response of
+    Just list ->
+      pure list
+    Nothing ->
+      ExceptT . pure . Left $ GQL.InvalidResponse
 
 toRemoteRepo :: GQL.Repository -> Maybe RemoteRepo
 toRemoteRepo repo = RemoteRepo

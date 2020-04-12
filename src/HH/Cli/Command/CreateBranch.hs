@@ -9,7 +9,9 @@ module HH.Cli.Command.CreateBranch
     )
   where
 
+import Control.Monad.Except
 import Control.Monad.Reader
+import Data.Text (pack)
 import Data.Text (Text)
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
@@ -43,12 +45,12 @@ runCreateBranch
   => CreateBranchArgs -> m ()
 runCreateBranch (CreateBranchArgs {..}) = do
   conf <- ask
-  response <- fetchAndFilterRepos conf org regex
+  response <- runExceptT $ fetchAndFilterRepos conf org regex
   case response of
     Right repos ->
       mapM_ (mkBranch useHttps newBranch baseBranch) repos
     Left err ->
-      printLn $ "Error " <> err
+      printLn $ "Error " <> (pack.show $ err)
 
 mkBranch
   :: (MonadReader UserConfig m, MonadConsole m, MonadGit m)
