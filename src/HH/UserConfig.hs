@@ -54,8 +54,8 @@ getConfigByPath fPath = do
     then do
         content <- fmapLT IOError . tryIO . LB.readFile $ fPath
         case eitherDecode content of
-          Left err ->
-            throwE $ DecodeError err
+          Left e ->
+            throwE $ DecodeError e
           Right config ->
             pure config
     else throwE FileNotExist

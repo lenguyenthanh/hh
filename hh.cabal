@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a45f3b4dc8c65c1e23909083893206b79551063da9d2ea279e7cddb9ebbe7824
+-- hash: f8b65435a8541e49c16505019bb7724318e56622c9032e772c85b53fa73bb175
 
 name:           hh
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Data.Morpheus.Extended
       HH.App
       HH.AppConfig
       HH.Cli.Cli

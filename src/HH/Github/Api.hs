@@ -20,11 +20,12 @@ module HH.Github.Api
     , Rest.createTeam
     , GQL.fetchUsername
     , GQL.GQLError(..)
+    , pickUrl
     )
   where
 
 import Control.Error
-import qualified Data.Morpheus.Types as M
+import Data.Morpheus.Extended (scalarToText)
 import Data.Text
 import GHC.Generics
 import qualified HH.Github.Internal.GraphQl as GQL
@@ -39,6 +40,11 @@ data RemoteRepo
     , url :: Text
     }
   deriving (Show, Generic)
+
+pickUrl :: Bool -> RemoteRepo -> Text
+pickUrl useHttps repo = if useHttps
+                           then httpsUrl repo
+                           else url repo
 
 fetchOrgRepos :: Text -> Text -> ExceptT GQL.GQLError IO [RemoteRepo]
 fetchOrgRepos org token = do
@@ -55,10 +61,6 @@ toRemoteRepo repo = RemoteRepo
                   <*> scalarToText (GQL.sshUrl repo)
                   <*> Just (GQL.nameWithOwner repo)
                   <*> scalarToText (GQL.url repo)
-
-scalarToText :: M.ScalarValue -> Maybe Text
-scalarToText (M.String t) = Just t
-scalarToText _ = Nothing
 
 httpsUrl :: RemoteRepo -> Text
 httpsUrl = (<> ".git") <$> url

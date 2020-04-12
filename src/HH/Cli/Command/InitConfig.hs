@@ -57,8 +57,8 @@ runSaveConfig args = do
   let conf = appConfig env
   result <- runExceptT $ verifyAndSave conf args
   case result of
+    Left e -> printLn $ showError e
     Right _ -> printLn "Saved configuration successfully"
-    Left err -> printLn $ showError err
 
 verifyAndSave
   :: (MonadConfig m, MonadGithub m, MonadFileSystem m)

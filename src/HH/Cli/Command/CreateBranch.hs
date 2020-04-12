@@ -63,10 +63,7 @@ mkBranch useHttps newBranch baseBranch repo = do
       then printLn $ "Created " <> newBranch <> " success"
       else printLn $ "Failed to create " <> newBranch
   where
-    url = if useHttps
-            then httpsUrl repo
-            else sshUrl repo
-    mkBranch' path = createNewBranch path newBranch baseBranch
-    doBranch isGitDir path = if isGitDir
-                              then mkBranch' path
-                              else clone path url >> mkBranch' path
+    doBranch isGitDir' path = if isGitDir'
+                                 then createNewBranch path newBranch baseBranch
+                                 else clone path (pickUrl useHttps repo)
+                                      >> createNewBranch path newBranch baseBranch

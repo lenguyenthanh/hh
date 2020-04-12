@@ -6,7 +6,7 @@ module HH.Effect.Github
     , G.RemoteRepo(..)
     , G.CreateTeam(..)
     , G.CreateTeamResponse(..)
-    , G.httpsUrl
+    , G.pickUrl
     , G.GQLError
     )
   where
