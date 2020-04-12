@@ -17,6 +17,7 @@ import qualified Data.ByteString.Lazy as LB
 import Data.Text
 import GHC.Generics
 import HH.AppConfig
+import HH.Internal.Prelude
 import qualified System.Directory as D
 import System.FilePath ((</>))
 import System.FilePath.Posix (takeDirectory)

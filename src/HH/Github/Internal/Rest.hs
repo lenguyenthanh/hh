@@ -1,6 +1,19 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedLabels #-}
+{-# LANGUAGE PartialTypeSignatures #-}
+{-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 
 module HH.Github.Internal.Rest
     ( CreateTeam(..)
@@ -13,30 +26,31 @@ import Data.Aeson
 import Data.Text
 import Data.Text.Encoding (encodeUtf8)
 import GHC.Generics
+import HH.Internal.Prelude
 import Network.HTTP.Req
 
 data CreateTeam
   = CreateTeam
-    { createTeamOrg :: Text
-    , createTeamName :: Text
-    , createTeamDescription :: Maybe Text
-    , createTeamUsers :: [Text]
-    , createTeamPrivacy :: Text
-    , createTeamToken :: Text
+    { org :: Text
+    , name :: Text
+    , description :: Maybe Text
+    , users :: [Text]
+    , privacy :: Text
+    , token :: Text
     }
-  deriving (Show)
+  deriving (Show, Generic)
 
 createTeam :: CreateTeam -> IO CreateTeamResponse
 createTeam CreateTeam {..} = runReq defaultHttpConfig $ do
-    let hs = headers createTeamToken
-    let body = CreateTeamBody { name = createTeamName
-                              , description = createTeamDescription
-                              , maintainers = createTeamUsers
-                              , privacy = createTeamPrivacy
+    let hs = headers token
+    let body = CreateTeamBody { name = name
+                              , description = description
+                              , maintainers = users
+                              , privacy = privacy
                               }
     responseBody
       <$> req POST
-              (https "api.github.com" /: "orgs" /: createTeamOrg /: "teams")
+              (https "api.github.com" /: "orgs" /: org /: "teams")
               (ReqBodyJson body)
               jsonResponse
               hs

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1050a5c7b39b866a0a658ff89be75a7857c7d15390d8b3e645acd2d817c22227
+-- hash: 7aa72efd74fd2f74a9f9e58830e190fb4ce965411710025376173916fb901d5c
 
 name:           hh
 version:        0.1.0.0
@@ -51,6 +51,7 @@ library
       HH.Github.Api
       HH.Github.Internal.GraphQl
       HH.Github.Internal.Rest
+      HH.Internal.Prelude
       HH.Main
       HH.UserConfig
       System.FilePath.Extended
@@ -58,7 +59,7 @@ library
       Paths_hh
   hs-source-dirs:
       src
-  default-extensions: OverloadedStrings
+  default-extensions: OverloadedStrings NoImplicitPrelude
   build-depends:
       aeson
     , base >=4.7 && <5
@@ -68,6 +69,7 @@ library
     , errors
     , exceptions
     , filepath
+    , generic-lens
     , lens
     , morpheus-graphql >=0.10.0
     , mtl
@@ -87,7 +89,7 @@ executable hh
       Paths_hh
   hs-source-dirs:
       app
-  default-extensions: OverloadedStrings
+  default-extensions: OverloadedStrings NoImplicitPrelude
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -98,6 +100,7 @@ executable hh
     , errors
     , exceptions
     , filepath
+    , generic-lens
     , hh
     , lens
     , morpheus-graphql >=0.10.0
@@ -119,7 +122,7 @@ test-suite hh-test
       Paths_hh
   hs-source-dirs:
       test
-  default-extensions: OverloadedStrings
+  default-extensions: OverloadedStrings NoImplicitPrelude
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -130,6 +133,7 @@ test-suite hh-test
     , errors
     , exceptions
     , filepath
+    , generic-lens
     , hh
     , lens
     , morpheus-graphql >=0.10.0

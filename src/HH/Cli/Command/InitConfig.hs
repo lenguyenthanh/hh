@@ -19,6 +19,7 @@ import HH.Effect.Console
 import HH.Effect.FileSystem
 import HH.Effect.Github
 import HH.Env
+import HH.Internal.Prelude
 import Options.Applicative
 import qualified Path as P
 

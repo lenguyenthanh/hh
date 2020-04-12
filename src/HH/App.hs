@@ -9,6 +9,7 @@ module HH.App
 import Control.Exception.Safe
 import Control.Monad.IO.Class
 import Control.Monad.Reader
+import HH.Internal.Prelude
 
 newtype AppM r m a =
     AppM { unAppM :: ReaderT r m a }

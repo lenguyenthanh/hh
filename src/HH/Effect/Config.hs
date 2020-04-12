@@ -14,6 +14,7 @@ import Control.Monad.Except
 import Control.Monad.Reader
 import HH.App
 import HH.AppConfig
+import HH.Internal.Prelude
 import qualified HH.UserConfig as U
 
 class Monad m => MonadConfig m where

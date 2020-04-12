@@ -8,6 +8,7 @@ import HH.Cli.Command.CloneRepos
 import HH.Cli.Command.Create
 import HH.Cli.Command.InitConfig
 import HH.Cli.Command.ShowRepos
+import HH.Internal.Prelude
 import Options.Applicative
 
 data Command

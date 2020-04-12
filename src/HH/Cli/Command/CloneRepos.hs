@@ -1,4 +1,6 @@
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.CloneRepos
@@ -8,16 +10,17 @@ module HH.Cli.Command.CloneRepos
     )
   where
 
+import Control.Lens
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader
-import Data.Text (Text)
-import Data.Text (pack)
+import Data.Text (Text, pack)
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.Git
 import HH.Effect.Github
+import HH.Internal.Prelude
 import Options.Applicative
 import System.FilePath.Extended
 
@@ -55,8 +58,8 @@ cloneRepo useHttps repo = do
   let path = concatPath [absRootPath conf, nameWithOwner repo]
   success <- clone url path
   if success
-      then printLn $ "Cloned " <> name repo <> " success"
-      else printLn $ "Failed to clone " <> name repo
+      then printLn $ "Cloned " <> repo ^. #name <> " success"
+      else printLn $ "Failed to clone " <> repo ^. #name
   where
     url = if useHttps
             then httpsUrl repo

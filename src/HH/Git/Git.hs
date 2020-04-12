@@ -9,6 +9,7 @@ module HH.Git.Git
   where
 
 import Data.Text
+import HH.Internal.Prelude
 import qualified Turtle as T
 
 clone :: Text -> Text -> IO Bool

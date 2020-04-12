@@ -1,4 +1,6 @@
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.ShowRepos
@@ -8,15 +10,16 @@ module HH.Cli.Command.ShowRepos
     )
   where
 
+import Control.Lens
 import Control.Monad.Except
 import Control.Monad.Reader
-import Data.Text (pack)
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config (UserConfig)
 import HH.Effect.Console
 import HH.Effect.Github
+import HH.Internal.Prelude
 import Options.Applicative
 
 data ShowRepArgs
@@ -45,4 +48,4 @@ runShowRepos (ShowRepArgs {..}) = do
 
 showRepo :: MonadConsole m => RemoteRepo -> m ()
 showRepo repo = printLn $
-  "Repo name: " <> name repo <> ", url: " <> url repo
+  "Repo name: " <> repo ^. #name <> ", url: " <> repo ^. #url

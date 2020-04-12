@@ -6,6 +6,7 @@ import Control.Monad.Reader
 import Data.Text (pack)
 import HH.Effect.Config
 import HH.Effect.Console
+import HH.Internal.Prelude
 
 runShowConfig
   :: (MonadReader UserConfig m, MonadConsole m)

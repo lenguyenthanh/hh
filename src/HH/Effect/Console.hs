@@ -9,6 +9,7 @@ module HH.Effect.Console
 import Control.Monad.Reader
 import Data.Text
 import HH.App
+import HH.Internal.Prelude
 
 -- | A class of monads that can interact with the Console.
 class Monad m => MonadConsole m where

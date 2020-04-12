@@ -1,23 +1,38 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedLabels #-}
+{-# LANGUAGE PartialTypeSignatures #-}
+{-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 
 module HH.Github.Api
     (RemoteRepo(..)
-    , Rest.CreateTeam(..)
-    , Rest.CreateTeamResponse(..)
     , httpsUrl
     , fetchOrgRepos
+    , Rest.CreateTeam(..)
+    , Rest.CreateTeamResponse(..)
+    , Rest.createTeam
     , GQL.fetchUsername
     , GQL.GQLError(..)
-    , Rest.createTeam
     )
   where
 
 import Control.Error
 import qualified Data.Morpheus.Types as M
 import Data.Text
+import GHC.Generics
 import qualified HH.Github.Internal.GraphQl as GQL
 import qualified HH.Github.Internal.Rest as Rest
+import HH.Internal.Prelude
 
 data RemoteRepo
   = RemoteRepo
@@ -26,7 +41,7 @@ data RemoteRepo
     , nameWithOwner :: Text
     , url :: Text
     }
-  deriving (Show)
+  deriving (Show, Generic)
 
 fetchOrgRepos :: Text -> Text -> ExceptT GQL.GQLError IO [RemoteRepo]
 fetchOrgRepos org token = do

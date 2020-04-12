@@ -12,6 +12,7 @@ import Control.Monad.Except
 import Control.Monad.Reader
 import Data.Text
 import HH.App
+import HH.Internal.Prelude
 import qualified System.Directory as D
 
 -- | A class of monads that can interact with the filesystem.

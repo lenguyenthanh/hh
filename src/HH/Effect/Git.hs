@@ -6,11 +6,11 @@ module HH.Effect.Git
     )
   where
 
-
 import Control.Monad.Reader
 import Data.Text
 import HH.App
 import qualified HH.Git.Git as G
+import HH.Internal.Prelude
 
 class Monad m => MonadGit m where
   clone :: Text -> Text -> m Bool

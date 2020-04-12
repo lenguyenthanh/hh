@@ -19,6 +19,7 @@ import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.Git
 import HH.Effect.Github
+import HH.Internal.Prelude
 import Options.Applicative
 import System.FilePath.Extended
 

@@ -9,6 +9,7 @@ module HH.Effect.Command
 import Control.Monad.Reader
 import HH.App
 import HH.Cli.Command
+import HH.Internal.Prelude
 
 
 -- | A class of monads that can access command-line arguments.

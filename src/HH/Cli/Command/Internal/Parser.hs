@@ -8,6 +8,7 @@ module HH.Cli.Command.Internal.Parser
   where
 
 import Data.Text
+import HH.Internal.Prelude
 import Options.Applicative
 
 organizationParser :: Parser Text

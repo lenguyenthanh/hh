@@ -4,6 +4,7 @@ module HH.Env
   where
 
 import HH.AppConfig
+import HH.Internal.Prelude
 
 data Env
   = Env

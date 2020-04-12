@@ -8,6 +8,7 @@ module HH.AppConfig
   where
 
 import Dhall
+import HH.Internal.Prelude
 
 data AppConfig
   = AppConfig

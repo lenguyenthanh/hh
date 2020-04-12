@@ -16,6 +16,7 @@ import Control.Monad.Reader
 import Data.Text
 import HH.App
 import qualified HH.Github.Api as G
+import HH.Internal.Prelude
 
 class Monad m => MonadGithub m where
   fetchUsername :: Text -> ExceptT G.GQLError m Text

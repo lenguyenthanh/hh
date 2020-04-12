@@ -14,6 +14,7 @@ import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.Github
+import HH.Internal.Prelude
 import Options.Applicative
 
 data CreateTeamArgs
@@ -62,12 +63,12 @@ runCreateTeam
 runCreateTeam (CreateTeamArgs {..}) = do
   conf <- ask
   let privacy = "secret"
-  let createTeamArgs = CreateTeam { createTeamOrg = org
-                                  , createTeamName = teamName
-                                  , createTeamDescription = description
-                                  , createTeamUsers = users
-                                  , createTeamPrivacy = privacy
-                                  , createTeamToken = githubToken conf
+  let createTeamArgs = CreateTeam { org = org
+                                  , name = teamName
+                                  , description = description
+                                  , users = users
+                                  , privacy = privacy
+                                  , token = githubToken conf
                                   }
   response <- createTeam createTeamArgs
-  printLn.pack $ show response
+  printLn.pack.show $ response

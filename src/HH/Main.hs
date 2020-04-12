@@ -16,6 +16,7 @@ import HH.Effect.FileSystem
 import HH.Effect.Git
 import HH.Effect.Github
 import HH.Env
+import HH.Internal.Prelude
 
 mainIO :: IO ()
 mainIO = do
