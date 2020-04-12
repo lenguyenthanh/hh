@@ -24,7 +24,7 @@ class Monad m => MonadConfig m where
   default getConfig
     :: (MonadTrans t, MonadConfig m', m ~ t m')
     => AppConfig -> m (Either U.GetConfigError U.UserConfig)
-  getConfig appConf = lift $ getConfig appConf
+  getConfig = lift.getConfig
 
   default saveConfig
     :: (MonadTrans t, MonadConfig m', m ~ t m')
@@ -35,5 +35,5 @@ instance MonadConfig m => MonadConfig (ReaderT r m)
 instance MonadConfig m => MonadConfig (AppM e m)
 
 instance MonadConfig IO where
-  saveConfig appConf = U.saveConfig appConf
+  saveConfig = U.saveConfig
   getConfig = runExceptT. U.getConfig

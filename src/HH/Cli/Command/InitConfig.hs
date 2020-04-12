@@ -57,13 +57,13 @@ runSaveConfig args = do
   let conf = appConfig env
   result <- runExceptT $ verifyAndSave conf args
   case result of
-    Right _ -> printLn $ "Saved configuration successfully"
+    Right _ -> printLn "Saved configuration successfully"
     Left err -> printLn $ showError err
 
 verifyAndSave
   :: (MonadConfig m, MonadGithub m, MonadFileSystem m)
   => AppConfig -> InitArgs -> ExceptT SaveConfigError m ()
-verifyAndSave conf (InitArgs{..}) = do
+verifyAndSave conf InitArgs{..} = do
   fmapLT (CreateDirectoryError root) $ createDirectoryIfMissing root
   name <- fmapLT (VerifyTokenError token) $ fetchUsername token
   fmapLT SaveConfigError . saveConfig conf $ UserConfig { absRootPath = root
@@ -77,6 +77,6 @@ data SaveConfigError
   | VerifyTokenError Text GQLError
 
 showError :: SaveConfigError -> Text
-showError (CreateDirectoryError root e) = "Failed to create root directory " <> root <> "\n" <> (pack $ show e)
-showError (SaveConfigError e) = "Failed to save your configuration" <> "\n" <> (pack $ show e)
+showError (CreateDirectoryError root e) = "Failed to create root directory " <> root <> "\n" <> pack (show e)
+showError (SaveConfigError e) = "Failed to save your configuration" <> "\n" <> pack (show e)
 showError (VerifyTokenError token msg) = "Failed to verify token: " <> token <> " because of: " <> (pack.show $ msg)

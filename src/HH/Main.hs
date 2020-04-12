@@ -5,7 +5,6 @@ module HH.Main
     )
   where
 
-import Control.Exception.Safe
 import HH.App
 import HH.AppConfig
 import HH.Cli.Cli
@@ -26,8 +25,7 @@ mainIO = do
 
 main
   :: (MonadConfig m, MonadConsole m, MonadGithub m
-    , MonadGit m, MonadCommand m, MonadFileSystem m
-    , MonadThrow m)
+    , MonadGit m, MonadCommand m, MonadFileSystem m)
   => AppM Env m ()
 main = do
   command <- getCommand

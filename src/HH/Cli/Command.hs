@@ -14,7 +14,7 @@ import Options.Applicative
 data Command
   = ShowConfig
   | Init InitArgs
-  | ShowRepos ShowRepArgs
+  | ShowRepos ShowReposArgs
   | CloneRepos CloneReposArgs
   | Create CreateArgs
   deriving (Show)
@@ -62,8 +62,11 @@ createParser :: Parser Command
 createParser = Create <$> createArgsParser
 
 
+hhProgDes :: String
 hhProgDes = "Git multirepo maintenance tool"
+hhHeader :: String
 hhHeader = "HH - Git from distance"
+hhVersion :: String
 hhVersion = "0.1.0"
 
 versionOption :: Parser (a -> a)

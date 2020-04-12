@@ -71,28 +71,27 @@ data GQLError
   deriving (Show)
 
 fetchRepositories :: Text -> Text -> ExceptT GQLError IO [Repository]
-fetchRepositories login token = fetchRepositories' login (encodeUtf8 token) Nothing
+fetchRepositories org token = fetchRepositories' org (encodeUtf8 token) Nothing
 
 fetchRepositories' :: Text -> BS.ByteString -> Maybe Text -> ExceptT GQLError IO [Repository]
-fetchRepositories' login token after = do
+fetchRepositories' org token after = do
   response <- safeIO $ fetch (resolver token) args
-  let pageInfo = getPageInfo response
   case getRepos response of
     Left e ->
       ExceptT . pure . Left $ e
     Right list ->
-      case pageInfo of
+      case getPageInfo response of
         Just info ->
           if hasNextPage info
             then do
-                rec <- fetchRepositories' login token (endCursor info)
+                rec <- fetchRepositories' org token (endCursor info)
                 pure $ list <> rec
             else
                 pure list
         Nothing ->
           pure list
   where
-    args = OrgReposArgs { orgReposArgsLogin = unpack login
+    args = OrgReposArgs { orgReposArgsLogin = unpack org
                         , orgReposArgsCount = 10
                         , orgReposArgsAfter = fmap unpack after
                         }
@@ -127,8 +126,7 @@ resolver token body = runReq defaultHttpConfig $ do
 
 safeIO :: forall a. IO (Either String a) -> ExceptT GQLError IO a
 safeIO io = ExceptT $
-  try io >>= \either ->
-    case either of
+  try io >>= \case
       Left (e :: HttpException) ->
         pure . Left . HttpError $ e
       Right r ->

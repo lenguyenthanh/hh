@@ -10,10 +10,7 @@
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE UndecidableInstances #-}
-
 
 module HH.Github.Internal.Rest
     ( CreateTeam(..)
@@ -83,14 +80,14 @@ instance FromJSON CreateTeamResponse where
   parseJSON = genericParseJSON
       defaultOptions { fieldLabelModifier = camelTo2 '_' }
 
+headers:: Text -> Option 'Https
 headers token = header "Content-Type" "application/vnd.github.v3+json"
               <> header "User-Agent" "hh"
               <> oAuth2Bearer (encodeUtf8 token)
 
 safeIO :: forall a. IO a -> ExceptT HttpException IO a
 safeIO io = ExceptT $
-  try io >>= \either ->
-    case either of
+  try io >>= \case
       Left (e :: HttpException) ->
         pure . Left $ e
       Right r ->

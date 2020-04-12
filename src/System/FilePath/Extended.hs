@@ -10,4 +10,4 @@ import System.FilePath
 
 
 concatPath :: Foldable t => t Text -> Text
-concatPath = pack.(foldr (\x y -> unpack x </> y) "")
+concatPath = pack.foldr (\x y -> unpack x </> y) ""

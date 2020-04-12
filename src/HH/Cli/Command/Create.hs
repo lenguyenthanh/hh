@@ -18,8 +18,8 @@ import HH.Internal.Prelude
 import Options.Applicative
 
 data CreateArgs
-  = Team (CreateTeamArgs)
-  | Branch (CreateBranchArgs)
+  = Team CreateTeamArgs
+  | Branch CreateBranchArgs
   deriving (Show)
 
 createArgsParser :: Parser CreateArgs

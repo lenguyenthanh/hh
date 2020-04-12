@@ -41,7 +41,7 @@ cloneReposArgsParser = CloneReposArgs
 runCloneRepos
   :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m, MonadGit m)
   => CloneReposArgs -> m ()
-runCloneRepos (CloneReposArgs {..}) = do
+runCloneRepos CloneReposArgs {..} = do
   conf <- ask
   response <- runExceptT $ fetchAndFilterRepos conf org regex
   case response of

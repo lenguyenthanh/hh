@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.CreateBranch
@@ -11,8 +10,7 @@ module HH.Cli.Command.CreateBranch
 
 import Control.Monad.Except
 import Control.Monad.Reader
-import Data.Text (pack)
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config
@@ -44,7 +42,7 @@ createBranchArgsParser = CreateBranchArgs
 runCreateBranch
   :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m, MonadGit m)
   => CreateBranchArgs -> m ()
-runCreateBranch (CreateBranchArgs {..}) = do
+runCreateBranch CreateBranchArgs {..} = do
   conf <- ask
   response <- runExceptT $ fetchAndFilterRepos conf org regex
   case response of

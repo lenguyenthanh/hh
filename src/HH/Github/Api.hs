@@ -9,10 +9,7 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE UndecidableInstances #-}
-
 
 module HH.Github.Api
     (RemoteRepo(..)
@@ -46,7 +43,7 @@ data RemoteRepo
 fetchOrgRepos :: Text -> Text -> ExceptT GQL.GQLError IO [RemoteRepo]
 fetchOrgRepos org token = do
   response <- GQL.fetchRepositories org token
-  case sequence . fmap toRemoteRepo $ response of
+  case traverse toRemoteRepo response of
     Just list ->
       pure list
     Nothing ->
@@ -54,14 +51,14 @@ fetchOrgRepos org token = do
 
 toRemoteRepo :: GQL.Repository -> Maybe RemoteRepo
 toRemoteRepo repo = RemoteRepo
-                  <$> (Just $ GQL.name repo)
-                  <*> (scalarToText $ GQL.sshUrl repo)
-                  <*> (Just $ GQL.nameWithOwner repo)
-                  <*> (scalarToText $ GQL.url repo)
+                  <$> Just (GQL.name repo)
+                  <*> scalarToText (GQL.sshUrl repo)
+                  <*> Just (GQL.nameWithOwner repo)
+                  <*> scalarToText (GQL.url repo)
 
 scalarToText :: M.ScalarValue -> Maybe Text
 scalarToText (M.String t) = Just t
-scalarToText x = Nothing
+scalarToText _ = Nothing
 
 httpsUrl :: RemoteRepo -> Text
 httpsUrl = (<> ".git") <$> url

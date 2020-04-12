@@ -24,7 +24,7 @@ filterRepos (Just regex) xs = filter (\x -> (x ^. #name) =~ regex :: Bool) xs
 fetchAndFilterRepos
   :: (MonadConsole m, MonadGithub m)
   => UserConfig -> Text -> Maybe Text -> ExceptT GQLError m [RemoteRepo]
-fetchAndFilterRepos conf org regex = do
-  let token = conf ^. #githubToken
-  response <- fetchOrgRepos org token
+fetchAndFilterRepos config orgName regex = do
+  let ghToken = config ^. #githubToken
+  response <- fetchOrgRepos orgName ghToken
   pure $ filterRepos regex response

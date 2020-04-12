@@ -34,7 +34,7 @@ instance ToJSON UserConfig
 instance FromJSON UserConfig
 
 saveConfig :: AppConfig -> UserConfig -> ExceptT IOException IO ()
-saveConfig (AppConfig{..}) config = do
+saveConfig AppConfig {..} config = do
   fPath <- userConfigPath configDir configName
   tryIO . D.createDirectoryIfMissing True . takeDirectory $ fPath
   saveConfWithPath fPath config

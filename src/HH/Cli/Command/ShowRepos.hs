@@ -4,7 +4,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.ShowRepos
-    ( ShowRepArgs(..)
+    ( ShowReposArgs(..)
     , showRepoArgsParser
     , runShowRepos
     )
@@ -22,22 +22,22 @@ import HH.Effect.Github
 import HH.Internal.Prelude
 import Options.Applicative
 
-data ShowRepArgs
-  = ShowRepArgs
+data ShowReposArgs
+  = ShowReposArgs
     { org :: Text
     , regex :: Maybe Text
     }
   deriving (Show)
 
-showRepoArgsParser :: Parser ShowRepArgs
-showRepoArgsParser = ShowRepArgs
+showRepoArgsParser :: Parser ShowReposArgs
+showRepoArgsParser = ShowReposArgs
                <$> organizationParser
                <*> optional regexParser
 
 runShowRepos
   :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m)
-  => ShowRepArgs -> m ()
-runShowRepos (ShowRepArgs {..}) = do
+  => ShowReposArgs -> m ()
+runShowRepos ShowReposArgs {..} = do
   conf <- ask
   response <- runExceptT $ fetchAndFilterRepos conf org regex
   case response of

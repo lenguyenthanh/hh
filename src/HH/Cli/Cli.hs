@@ -33,14 +33,14 @@ runCommand (ShowRepos args) = embedConfig $ runShowRepos args
 embedConfig :: (MonadConsole m, MonadConfig m, MonadReader Env m) => AppM UserConfig m () -> m ()
 embedConfig n = do
   env <- ask
-  conf <- userConfig env
-  case conf of
-    Right conf -> do
+  result <- userConfig env
+  case result of
+    Right conf ->
       runAppM conf n
     Left err ->
       printLn.pack.getUserConfError $ err
 
-userConfig :: (MonadConsole m, MonadConfig m) => Env -> m (Either GetConfigError UserConfig)
+userConfig :: (MonadConfig m) => Env -> m (Either GetConfigError UserConfig)
 userConfig env = getConfig $ appConfig env
 
 getUserConfError :: GetConfigError -> String

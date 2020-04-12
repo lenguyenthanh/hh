@@ -64,7 +64,7 @@ usersParser = option str
 runCreateTeam
   :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m)
   => CreateTeamArgs -> m ()
-runCreateTeam (CreateTeamArgs {..}) = do
+runCreateTeam CreateTeamArgs {..} = do
   conf <- ask
   let privacy = if secret
                   then "secret"
