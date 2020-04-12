@@ -22,6 +22,8 @@ module HH.Github.Internal.Rest
     )
   where
 
+import Control.Exception.Safe
+import Control.Monad.Except
 import Data.Aeson
 import Data.Text
 import Data.Text.Encoding (encodeUtf8)
@@ -40,20 +42,22 @@ data CreateTeam
     }
   deriving (Show, Generic)
 
-createTeam :: CreateTeam -> IO CreateTeamResponse
-createTeam CreateTeam {..} = runReq defaultHttpConfig $ do
-    let hs = headers token
-    let body = CreateTeamBody { name = name
-                              , description = description
-                              , maintainers = users
-                              , privacy = privacy
-                              }
-    responseBody
-      <$> req POST
-              (https "api.github.com" /: "orgs" /: org /: "teams")
-              (ReqBodyJson body)
-              jsonResponse
-              hs
+createTeam :: CreateTeam -> ExceptT HttpException IO CreateTeamResponse
+createTeam CreateTeam {..} = safeIO io
+  where
+    io = runReq defaultHttpConfig $ do
+      let hs = headers token
+      let body = CreateTeamBody { name = name
+                                , description = description
+                                , maintainers = users
+                                , privacy = privacy
+                                }
+      responseBody
+        <$> req POST
+                (https "api.github.com" /: "orgs" /: org /: "teams")
+                (ReqBodyJson body)
+                jsonResponse
+                hs
 
 data CreateTeamBody
   = CreateTeamBody
@@ -67,9 +71,10 @@ data CreateTeamBody
 instance ToJSON CreateTeamBody
 instance FromJSON CreateTeamBody
 
-data CreateTeamResponse = CreateTeamResponse
+data CreateTeamResponse
+  = CreateTeamResponse
     { id :: Int
-    , htmlUrl :: String
+    , htmlUrl :: Text
     }
   deriving (Generic, Show)
 
@@ -81,3 +86,12 @@ instance FromJSON CreateTeamResponse where
 headers token = header "Content-Type" "application/vnd.github.v3+json"
               <> header "User-Agent" "hh"
               <> oAuth2Bearer (encodeUtf8 token)
+
+safeIO :: forall a. IO a -> ExceptT HttpException IO a
+safeIO io = ExceptT $
+  try io >>= \either ->
+    case either of
+      Left (e :: HttpException) ->
+        pure . Left $ e
+      Right r ->
+        pure . Right $ r

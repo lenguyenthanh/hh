@@ -1,4 +1,6 @@
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.CreateTeam
@@ -8,6 +10,8 @@ module HH.Cli.Command.CreateTeam
     )
   where
 
+import Control.Lens
+import Control.Monad.Except
 import Control.Monad.Reader
 import Data.Text (Text, pack)
 import HH.Cli.Command.Internal.Parser
@@ -70,5 +74,9 @@ runCreateTeam (CreateTeamArgs {..}) = do
                                   , privacy = privacy
                                   , token = githubToken conf
                                   }
-  response <- createTeam createTeamArgs
-  printLn.pack.show $ response
+  result <- runExceptT $ createTeam createTeamArgs
+  case result of
+    Left e ->
+      printLn $ "Failed to create team " <> teamName <> " Because\n" <> (pack.show $ e)
+    Right r ->
+      printLn $ "Created team " <> teamName <> " successfully at " <> (r ^. #htmlUrl)

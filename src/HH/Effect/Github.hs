@@ -17,10 +17,11 @@ import Data.Text
 import HH.App
 import qualified HH.Github.Api as G
 import HH.Internal.Prelude
+import Network.HTTP.Req
 
 class Monad m => MonadGithub m where
   fetchUsername :: Text -> ExceptT G.GQLError m Text
-  createTeam :: G.CreateTeam -> m G.CreateTeamResponse
+  createTeam :: G.CreateTeam -> ExceptT HttpException m G.CreateTeamResponse
   fetchOrgRepos :: Text -> Text -> ExceptT G.GQLError m [G.RemoteRepo]
 
   default fetchUsername
@@ -28,8 +29,10 @@ class Monad m => MonadGithub m where
     => Text -> ExceptT G.GQLError m Text
   fetchUsername = ExceptT . lift . runExceptT . fetchUsername
 
-  default createTeam :: (MonadTrans t, MonadGithub m', m ~ t m') => G.CreateTeam -> m G.CreateTeamResponse
-  createTeam = lift.createTeam
+  default createTeam
+    :: (MonadTrans t, MonadGithub m', m ~ t m')
+    => G.CreateTeam -> ExceptT HttpException m G.CreateTeamResponse
+  createTeam = ExceptT . lift . runExceptT . createTeam
 
   default fetchOrgRepos
     :: (MonadTrans t, MonadGithub m', m ~ t m')
