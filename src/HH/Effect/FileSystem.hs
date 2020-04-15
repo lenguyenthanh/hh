@@ -2,9 +2,9 @@
 {-# LANGUAGE GADTs #-}
 
 module HH.Effect.FileSystem
-    (MonadFileSystem(..)
-    )
-  where
+  ( MonadFileSystem (..),
+  )
+where
 
 import Control.Error
 import Control.Exception.Safe (IOException)
@@ -21,13 +21,14 @@ class Monad m => MonadFileSystem m where
   -- not exist, is not accessible, or is improperly encoded, this method throws
   -- an exception.
   createDirectoryIfMissing :: Text -> ExceptT IOException m ()
-
-  default createDirectoryIfMissing
-    :: (MonadTrans t, MonadFileSystem m', m ~ t m')
-    => Text -> ExceptT IOException m ()
+  default createDirectoryIfMissing ::
+    (MonadTrans t, MonadFileSystem m', m ~ t m') =>
+    Text ->
+    ExceptT IOException m ()
   createDirectoryIfMissing = ExceptT . lift . runExceptT . createDirectoryIfMissing
 
 instance MonadFileSystem m => MonadFileSystem (ReaderT r m)
+
 instance MonadFileSystem m => MonadFileSystem (AppM e m)
 
 instance MonadFileSystem IO where

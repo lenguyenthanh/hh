@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module HH.Git.Git
-    (clone
-    , newBranch
-    , isGitDir
-    , pushBranch
-    )
-  where
+  ( clone,
+    newBranch,
+    isGitDir,
+    pushBranch,
+  )
+where
 
 import Data.Text
 import HH.Internal.Prelude

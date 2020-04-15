@@ -1,8 +1,8 @@
 module HH.Cli.Command
-    ( Command(..)
-    , commands
-    )
-  where
+  ( Command (..),
+    commands,
+  )
+where
 
 import HH.Cli.Command.CloneRepos
 import HH.Cli.Command.Create
@@ -19,33 +19,38 @@ data Command
   | Create CreateArgs
   deriving (Show)
 
-
 commandParser :: Parser Command
-commandParser = hsubparser
-    (  command
-          "init"
-          (info initCommand
-                (progDesc "Init your configuration")
-          )
-    <> command
+commandParser =
+  hsubparser
+    ( command
+        "init"
+        ( info
+            initCommand
+            (progDesc "Init your configuration")
+        )
+        <> command
           "show-config"
-          (info (pure ShowConfig)
-                (progDesc "Show your configuration")
+          ( info
+              (pure ShowConfig)
+              (progDesc "Show your configuration")
           )
-    <> command
+        <> command
           "show-repos"
-          (info showRepoCommand
-                (progDesc "Show all repos in an organization that maches a regex")
+          ( info
+              showRepoCommand
+              (progDesc "Show all repos in an organization that maches a regex")
           )
-    <> command
+        <> command
           "clone"
-          (info cloneReposCommand
-                (progDesc "Clone all repos in an organization that matches a regex")
+          ( info
+              cloneReposCommand
+              (progDesc "Clone all repos in an organization that matches a regex")
           )
-    <> command
+        <> command
           "create"
-          (info createParser
-                (progDesc "Create team, branch, discussion")
+          ( info
+              createParser
+              (progDesc "Create team, branch, discussion")
           )
     )
 
@@ -61,22 +66,27 @@ cloneReposCommand = CloneRepos <$> cloneReposArgsParser
 createParser :: Parser Command
 createParser = Create <$> createArgsParser
 
-
 hhProgDes :: String
 hhProgDes = "Git multirepo maintenance tool"
+
 hhHeader :: String
 hhHeader = "HH - Git from distance"
+
 hhVersion :: String
 hhVersion = "0.1.0"
 
 versionOption :: Parser (a -> a)
-versionOption = infoOption
+versionOption =
+  infoOption
     ("hh version " <> hhVersion)
     (short 'v' <> long "version" <> help "Show the program version" <> hidden)
 
 commands :: IO Command
-commands = execParser $
-  info (commandParser <**> versionOption <**> helper)
+commands =
+  execParser $
+    info
+      (commandParser <**> versionOption <**> helper)
       ( fullDesc
-      <> progDesc hhProgDes
-      <> header hhHeader)
+          <> progDesc hhProgDes
+          <> header hhHeader
+      )

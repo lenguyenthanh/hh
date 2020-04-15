@@ -1,19 +1,19 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module HH.AppConfig
-    ( AppConfig(..)
-    , getAppConfig
-    )
-  where
+  ( AppConfig (..),
+    getAppConfig,
+  )
+where
 
 import Dhall
 import HH.Internal.Prelude
 
 data AppConfig
   = AppConfig
-    { configDir :: Text
-    , configName :: Text
-    }
+      { configDir :: Text,
+        configName :: Text
+      }
   deriving (Generic, Show)
 
 instance FromDhall AppConfig

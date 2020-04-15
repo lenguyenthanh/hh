@@ -3,10 +3,10 @@
 {-# LANGUAGE OverloadedLabels #-}
 
 module HH.Cli.Command.Internal.Common
-    (filterRepos
-    , fetchAndFilterRepos
-    )
-  where
+  ( filterRepos,
+    fetchAndFilterRepos,
+  )
+where
 
 import Control.Lens
 import Control.Monad.Except
@@ -21,9 +21,12 @@ filterRepos :: Maybe Text -> [RemoteRepo] -> [RemoteRepo]
 filterRepos Nothing x = x
 filterRepos (Just regex) xs = filter (\x -> (x ^. #name) =~ regex :: Bool) xs
 
-fetchAndFilterRepos
-  :: (MonadConsole m, MonadGithub m)
-  => UserConfig -> Text -> Maybe Text -> ExceptT GQLError m [RemoteRepo]
+fetchAndFilterRepos ::
+  (MonadConsole m, MonadGithub m) =>
+  UserConfig ->
+  Text ->
+  Maybe Text ->
+  ExceptT GQLError m [RemoteRepo]
 fetchAndFilterRepos config orgName regex = do
   let ghToken = config ^. #githubToken
   response <- fetchOrgRepos orgName ghToken

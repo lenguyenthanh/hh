@@ -1,13 +1,13 @@
 module HH.Env
-    ( Env(..)
-    )
-  where
+  ( Env (..),
+  )
+where
 
 import HH.AppConfig
 import HH.Internal.Prelude
 
 data Env
   = Env
-    { appConfig :: AppConfig
-    }
+      { appConfig :: AppConfig
+      }
   deriving (Show)

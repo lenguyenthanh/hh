@@ -3,12 +3,12 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module HH.UserConfig
-    (UserConfig(..)
-    , saveConfig
-    , getConfig
-    , GetConfigError(..)
-    )
-  where
+  ( UserConfig (..),
+    saveConfig,
+    getConfig,
+    GetConfigError (..),
+  )
+where
 
 import Control.Error
 import Control.Exception.Safe (IOException)
@@ -24,13 +24,14 @@ import System.FilePath.Posix (takeDirectory)
 
 data UserConfig
   = UserConfig
-    { absRootPath :: Text
-    , githubToken :: Text
-    , githubUsername :: Text
-    }
+      { absRootPath :: Text,
+        githubToken :: Text,
+        githubUsername :: Text
+      }
   deriving (Generic, Show)
 
 instance ToJSON UserConfig
+
 instance FromJSON UserConfig
 
 saveConfig :: AppConfig -> UserConfig -> ExceptT IOException IO ()
@@ -43,7 +44,7 @@ saveConfWithPath :: FilePath -> UserConfig -> ExceptT IOException IO ()
 saveConfWithPath fPath = tryIO . LB.writeFile fPath . encode
 
 getConfig :: AppConfig -> ExceptT GetConfigError IO UserConfig
-getConfig AppConfig{..} =  do
+getConfig AppConfig {..} = do
   fPath <- fmapLT IOError $ userConfigPath configDir configName
   getConfigByPath fPath
 
@@ -52,12 +53,12 @@ getConfigByPath fPath = do
   isConfFileExist <- fmapLT IOError . tryIO . D.doesFileExist $ fPath
   if isConfFileExist
     then do
-        content <- fmapLT IOError . tryIO . LB.readFile $ fPath
-        case eitherDecode content of
-          Left e ->
-            throwE $ DecodeError e
-          Right config ->
-            pure config
+      content <- fmapLT IOError . tryIO . LB.readFile $ fPath
+      case eitherDecode content of
+        Left e ->
+          throwE $ DecodeError e
+        Right config ->
+          pure config
     else throwE FileNotExist
 
 data GetConfigError
@@ -68,5 +69,5 @@ data GetConfigError
 
 userConfigPath :: Text -> Text -> ExceptT IOException IO FilePath
 userConfigPath dir name = do
-      path <- tryIO . D.getXdgDirectory D.XdgConfig . unpack $ dir
-      pure $ path </> unpack name
+  path <- tryIO . D.getXdgDirectory D.XdgConfig . unpack $ dir
+  pure $ path </> unpack name

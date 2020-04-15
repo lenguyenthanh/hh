@@ -1,11 +1,11 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module HH.Cli.Command.Create
-    (CreateArgs(..)
-    , createArgsParser
-    , runCreate
-    )
-  where
+  ( CreateArgs (..),
+    createArgsParser,
+    runCreate,
+  )
+where
 
 import Control.Monad.Reader
 import HH.Cli.Command.CreateBranch
@@ -23,22 +23,26 @@ data CreateArgs
   deriving (Show)
 
 createArgsParser :: Parser CreateArgs
-createArgsParser = hsubparser
+createArgsParser =
+  hsubparser
     ( command
         "team"
-        (info teamParser
-              (progDesc "Create new team for an organization")
+        ( info
+            teamParser
+            (progDesc "Create new team for an organization")
         )
-    <> command
-        "branch"
-        (info branchParser
+        <> command
+          "branch"
+          ( info
+              branchParser
               (progDesc "Create a new branch for all repos in an organization that matches a regex")
-        )
+          )
     )
 
-runCreate
-  :: (MonadConsole m, MonadGithub m, MonadGit m, MonadReader UserConfig m)
-  => CreateArgs -> m ()
+runCreate ::
+  (MonadConsole m, MonadGithub m, MonadGit m, MonadReader UserConfig m) =>
+  CreateArgs ->
+  m ()
 runCreate (Team args) = runCreateTeam args
 runCreate (Branch args) = runCreateBranch args
 

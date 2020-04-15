@@ -9,21 +9,21 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module HH.Github.Internal.GraphQl
-    ( fetchUsername
-    , fetchRepositories
-    , OrganizationRepositoriesNodesRepository(..)
-    , Repository
-    , GQLError(..)
-    )
-  where
+  ( fetchUsername,
+    fetchRepositories,
+    OrganizationRepositoriesNodesRepository (..),
+    Repository,
+    GQLError (..),
+  )
+where
 
 import Control.Error
 import Control.Exception.Safe
 import Control.Monad.Except
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy.Char8 as BL
-import Data.Morpheus.Client (Fetch(..), defineByDocumentFile, gql)
-import Data.Morpheus.Types (ScalarValue(..))
+import Data.Morpheus.Client (Fetch (..), defineByDocumentFile, gql)
+import Data.Morpheus.Types (ScalarValue (..))
 import Data.Text (Text, pack, unpack)
 import Data.Text.Encoding (encodeUtf8)
 import HH.Internal.Prelude
@@ -65,9 +65,9 @@ defineByDocumentFile
 type Repository = OrganizationRepositoriesNodesRepository
 
 data GQLError
-    = GQLError Text
-    | HttpError HttpException
-    | InvalidResponse
+  = GQLError Text
+  | HttpError HttpException
+  | InvalidResponse
   deriving (Show)
 
 fetchRepositories :: Text -> Text -> ExceptT GQLError IO [Repository]
@@ -84,27 +84,29 @@ fetchRepositories' org token after = do
         Just info ->
           if hasNextPage info
             then do
-                rec <- fetchRepositories' org token (endCursor info)
-                pure $ list <> rec
-            else
-                pure list
+              rec <- fetchRepositories' org token (endCursor info)
+              pure $ list <> rec
+            else pure list
         Nothing ->
           pure list
   where
-    args = OrgReposArgs { orgReposArgsLogin = unpack org
-                        , orgReposArgsCount = 10
-                        , orgReposArgsAfter = fmap unpack after
-                        }
+    args =
+      OrgReposArgs
+        { orgReposArgsLogin = unpack org,
+          orgReposArgsCount = 10,
+          orgReposArgsAfter = fmap unpack after
+        }
 
 getRepos :: OrgRepos -> Either GQLError [Repository]
-getRepos = justErr InvalidResponse .
-  (sequenceA <=< nodes.repositories <=< organization)
+getRepos =
+  justErr InvalidResponse
+    . (sequenceA <=< nodes . repositories <=< organization)
 
 getPageInfo :: OrgRepos -> Maybe OrganizationRepositoriesPageInfoPageInfo
-getPageInfo = pure.pageInfo.repositories <=< organization
+getPageInfo = pure . pageInfo . repositories <=< organization
 
 fetchUsername :: Text -> ExceptT GQLError IO Text
-fetchUsername = fmap username . fetchLogin. encodeUtf8
+fetchUsername = fmap username . fetchLogin . encodeUtf8
 
 fetchLogin :: BS.ByteString -> ExceptT GQLError IO Login
 fetchLogin token = safeIO $ fetch (resolver token) ()
@@ -114,20 +116,22 @@ username = login . viewer
 
 resolver :: BS.ByteString -> BL.ByteString -> IO BL.ByteString
 resolver token body = runReq defaultHttpConfig $ do
-    let headers = header "Content-Type" "application/json"
-                <> header "User-Agent" "hh"
-                <> oAuth2Bearer token
-    responseBody
-        <$> req POST
-                (https "api.github.com" /: "graphql")
-                (ReqBodyLbs body)
-                lbsResponse
-                headers
+  let headers =
+        header "Content-Type" "application/json"
+          <> header "User-Agent" "hh"
+          <> oAuth2Bearer token
+  responseBody
+    <$> req
+      POST
+      (https "api.github.com" /: "graphql")
+      (ReqBodyLbs body)
+      lbsResponse
+      headers
 
 safeIO :: forall a. IO (Either String a) -> ExceptT GQLError IO a
 safeIO io = ExceptT $
   try io >>= \case
-      Left (e :: HttpException) ->
-        pure . Left . HttpError $ e
-      Right r ->
-        pure . fmapL (GQLError . pack) $ r
+    Left (e :: HttpException) ->
+      pure . Left . HttpError $ e
+    Right r ->
+      pure . fmapL (GQLError . pack) $ r

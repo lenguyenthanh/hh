@@ -4,11 +4,11 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.ShowRepos
-    ( ShowReposArgs(..)
-    , showRepoArgsParser
-    , runShowRepos
-    )
-  where
+  ( ShowReposArgs (..),
+    showRepoArgsParser,
+    runShowRepos,
+  )
+where
 
 import Control.Lens
 import Control.Monad.Except
@@ -24,19 +24,21 @@ import Options.Applicative
 
 data ShowReposArgs
   = ShowReposArgs
-    { org :: Text
-    , regex :: Maybe Text
-    }
+      { org :: Text,
+        regex :: Maybe Text
+      }
   deriving (Show)
 
 showRepoArgsParser :: Parser ShowReposArgs
-showRepoArgsParser = ShowReposArgs
-               <$> organizationParser
-               <*> optional regexParser
+showRepoArgsParser =
+  ShowReposArgs
+    <$> organizationParser
+    <*> optional regexParser
 
-runShowRepos
-  :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m)
-  => ShowReposArgs -> m ()
+runShowRepos ::
+  (MonadReader UserConfig m, MonadConsole m, MonadGithub m) =>
+  ShowReposArgs ->
+  m ()
 runShowRepos ShowReposArgs {..} = do
   conf <- ask
   response <- runExceptT $ fetchAndFilterRepos conf org regex
@@ -44,8 +46,9 @@ runShowRepos ShowReposArgs {..} = do
     Right repos ->
       mapM_ showRepo repos
     Left err ->
-      printLn $ "Error " <> (pack.show $ err)
+      printLn $ "Error " <> (pack . show $ err)
 
 showRepo :: MonadConsole m => RemoteRepo -> m ()
-showRepo repo = printLn $
-  "Repo name: " <> repo ^. #name <> ", url: " <> repo ^. #url
+showRepo repo =
+  printLn $
+    "Repo name: " <> repo ^. #name <> ", url: " <> repo ^. #url

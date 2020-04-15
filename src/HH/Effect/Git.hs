@@ -2,9 +2,9 @@
 {-# LANGUAGE GADTs #-}
 
 module HH.Effect.Git
-    ( MonadGit(..)
-    )
-  where
+  ( MonadGit (..),
+  )
+where
 
 import Control.Monad.Reader
 import Data.Text
@@ -31,6 +31,7 @@ class Monad m => MonadGit m where
   pushBranch path branch = lift $ pushBranch path branch
 
 instance MonadGit m => MonadGit (ReaderT r m)
+
 instance MonadGit m => MonadGit (AppM e m)
 
 instance MonadGit IO where

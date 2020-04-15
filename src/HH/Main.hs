@@ -1,9 +1,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module HH.Main
-    (mainIO
-    )
-  where
+  ( mainIO,
+  )
+where
 
 import HH.App
 import HH.AppConfig
@@ -20,13 +20,18 @@ import HH.Internal.Prelude
 mainIO :: IO ()
 mainIO = do
   conf <- getAppConfig
-  let env = Env { appConfig = conf }
+  let env = Env {appConfig = conf}
   runAppM env main
 
-main
-  :: (MonadConfig m, MonadConsole m, MonadGithub m
-    , MonadGit m, MonadCommand m, MonadFileSystem m)
-  => AppM Env m ()
+main ::
+  ( MonadConfig m,
+    MonadConsole m,
+    MonadGithub m,
+    MonadGit m,
+    MonadCommand m,
+    MonadFileSystem m
+  ) =>
+  AppM Env m ()
 main = do
   command <- getCommand
   runCommand command

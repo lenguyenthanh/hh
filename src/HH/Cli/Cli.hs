@@ -20,10 +20,16 @@ import HH.Effect.Github
 import HH.Env
 import HH.Internal.Prelude
 
-runCommand
-  :: (MonadConfig m, MonadConsole m, MonadGithub m
-     , MonadGit m, MonadFileSystem m, MonadReader Env m)
-  => Command -> m ()
+runCommand ::
+  ( MonadConfig m,
+    MonadConsole m,
+    MonadGithub m,
+    MonadGit m,
+    MonadFileSystem m,
+    MonadReader Env m
+  ) =>
+  Command ->
+  m ()
 runCommand (CloneRepos args) = embedConfig $ runCloneRepos args
 runCommand (Create args) = embedConfig $ runCreate args
 runCommand (Init args) = runSaveConfig args
@@ -38,7 +44,7 @@ embedConfig n = do
     Right conf ->
       runAppM conf n
     Left err ->
-      printLn.pack.getUserConfError $ err
+      printLn . pack . getUserConfError $ err
 
 userConfig :: (MonadConfig m) => Env -> m (Either GetConfigError UserConfig)
 userConfig env = getConfig $ appConfig env

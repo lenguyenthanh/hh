@@ -4,11 +4,11 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.CloneRepos
-    ( CloneReposArgs(..)
-    , cloneReposArgsParser
-    , runCloneRepos
-    )
-  where
+  ( CloneReposArgs (..),
+    cloneReposArgsParser,
+    runCloneRepos,
+  )
+where
 
 import Control.Lens
 import Control.Monad.Except (runExceptT)
@@ -26,21 +26,23 @@ import System.FilePath.Extended
 
 data CloneReposArgs
   = CloneReposArgs
-    { org :: Text
-    , regex :: Maybe Text
-    , useHttps :: Bool
-    }
+      { org :: Text,
+        regex :: Maybe Text,
+        useHttps :: Bool
+      }
   deriving (Show)
 
 cloneReposArgsParser :: Parser CloneReposArgs
-cloneReposArgsParser = CloneReposArgs
-               <$> organizationParser
-               <*> optional regexParser
-               <*> useHttpsParser
+cloneReposArgsParser =
+  CloneReposArgs
+    <$> organizationParser
+    <*> optional regexParser
+    <*> useHttpsParser
 
-runCloneRepos
-  :: (MonadReader UserConfig m, MonadConsole m, MonadGithub m, MonadGit m)
-  => CloneReposArgs -> m ()
+runCloneRepos ::
+  (MonadReader UserConfig m, MonadConsole m, MonadGithub m, MonadGit m) =>
+  CloneReposArgs ->
+  m ()
 runCloneRepos CloneReposArgs {..} = do
   conf <- ask
   response <- runExceptT $ fetchAndFilterRepos conf org regex
@@ -48,15 +50,17 @@ runCloneRepos CloneReposArgs {..} = do
     Right repos ->
       mapM_ (cloneRepo useHttps) repos
     Left err ->
-      printLn $ "Error " <> (pack.show $ err)
+      printLn $ "Error " <> (pack . show $ err)
 
-cloneRepo
-  :: (MonadReader UserConfig m, MonadGit m, MonadConsole m)
-  => Bool -> RemoteRepo -> m ()
+cloneRepo ::
+  (MonadReader UserConfig m, MonadGit m, MonadConsole m) =>
+  Bool ->
+  RemoteRepo ->
+  m ()
 cloneRepo useHttps repo = do
   conf <- ask
   let path = concatPath [absRootPath conf, nameWithOwner repo]
   success <- clone (pickUrl useHttps repo) path
   if success
-      then printLn $ "Cloned " <> repo ^. #name <> " success"
-      else printLn $ "Failed to clone " <> repo ^. #name
+    then printLn $ "Cloned " <> repo ^. #name <> " success"
+    else printLn $ "Failed to clone " <> repo ^. #name
