@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f8b65435a8541e49c16505019bb7724318e56622c9032e772c85b53fa73bb175
+-- hash: a04d1589527ca528a0f2032c01bbfa7c9cdbce8d9333952bc039709c92e0f8fc
 
 name:           hh
 version:        0.1.0.0
@@ -60,7 +60,7 @@ library
       Paths_hh
   hs-source-dirs:
       src
-  default-extensions: OverloadedStrings NoImplicitPrelude LambdaCase
+  default-extensions: OverloadedStrings NoImplicitPrelude LambdaCase NamedFieldPuns DuplicateRecordFields
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       aeson
@@ -91,7 +91,7 @@ executable hh
       Paths_hh
   hs-source-dirs:
       app
-  default-extensions: OverloadedStrings NoImplicitPrelude LambdaCase
+  default-extensions: OverloadedStrings NoImplicitPrelude LambdaCase NamedFieldPuns DuplicateRecordFields
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -124,7 +124,7 @@ test-suite hh-test
       Paths_hh
   hs-source-dirs:
       test
-  default-extensions: OverloadedStrings NoImplicitPrelude LambdaCase
+  default-extensions: OverloadedStrings NoImplicitPrelude LambdaCase NamedFieldPuns DuplicateRecordFields
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson

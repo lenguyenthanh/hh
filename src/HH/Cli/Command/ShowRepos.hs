@@ -1,7 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.ShowRepos
   ( ShowReposArgs (..),
@@ -39,7 +38,7 @@ runShowRepos ::
   (MonadReader UserConfig m, MonadConsole m, MonadGithub m) =>
   ShowReposArgs ->
   m ()
-runShowRepos ShowReposArgs {..} = do
+runShowRepos ShowReposArgs {org, regex} = do
   conf <- ask
   response <- runExceptT $ fetchAndFilterRepos conf org regex
   case response of

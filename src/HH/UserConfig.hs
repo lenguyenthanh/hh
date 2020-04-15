@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module HH.UserConfig
   ( UserConfig (..),
@@ -35,7 +34,7 @@ instance ToJSON UserConfig
 instance FromJSON UserConfig
 
 saveConfig :: AppConfig -> UserConfig -> ExceptT IOException IO ()
-saveConfig AppConfig {..} config = do
+saveConfig AppConfig {configDir, configName} config = do
   fPath <- userConfigPath configDir configName
   tryIO . D.createDirectoryIfMissing True . takeDirectory $ fPath
   saveConfWithPath fPath config
@@ -44,7 +43,7 @@ saveConfWithPath :: FilePath -> UserConfig -> ExceptT IOException IO ()
 saveConfWithPath fPath = tryIO . LB.writeFile fPath . encode
 
 getConfig :: AppConfig -> ExceptT GetConfigError IO UserConfig
-getConfig AppConfig {..} = do
+getConfig AppConfig {configDir, configName} = do
   fPath <- fmapLT IOError $ userConfigPath configDir configName
   getConfigByPath fPath
 

@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.InitConfig
   ( InitArgs,
@@ -70,7 +69,7 @@ verifyAndSave ::
   AppConfig ->
   InitArgs ->
   ExceptT SaveConfigError m ()
-verifyAndSave conf InitArgs {..} = do
+verifyAndSave conf InitArgs {root, token} = do
   fmapLT (CreateDirectoryError root) $ createDirectoryIfMissing root
   name <- fmapLT (VerifyTokenError token) $ fetchUsername token
   fmapLT SaveConfigError . saveConfig conf $

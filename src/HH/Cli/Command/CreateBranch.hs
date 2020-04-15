@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.CreateBranch
   ( CreateBranchArgs (..),
@@ -44,7 +43,7 @@ runCreateBranch ::
   (MonadReader UserConfig m, MonadConsole m, MonadGithub m, MonadGit m) =>
   CreateBranchArgs ->
   m ()
-runCreateBranch CreateBranchArgs {..} = do
+runCreateBranch CreateBranchArgs {org, regex, newBranch, baseBranch, useHttps} = do
   conf <- ask
   response <- runExceptT $ fetchAndFilterRepos conf org regex
   case response of

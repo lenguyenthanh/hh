@@ -1,7 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module HH.Cli.Command.CreateTeam
   ( CreateTeamArgs (..),
@@ -73,7 +72,7 @@ runCreateTeam ::
   (MonadReader UserConfig m, MonadConsole m, MonadGithub m) =>
   CreateTeamArgs ->
   m ()
-runCreateTeam CreateTeamArgs {..} = do
+runCreateTeam CreateTeamArgs {org, teamName, description, secret, users} = do
   conf <- ask
   let privacy =
         if secret

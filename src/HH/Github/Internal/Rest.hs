@@ -7,7 +7,6 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# LANGUAGE Rank2Types #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
@@ -40,7 +39,7 @@ data CreateTeam
   deriving (Show, Generic)
 
 createTeam :: CreateTeam -> ExceptT HttpException IO CreateTeamResponse
-createTeam CreateTeam {..} = safeIO io
+createTeam CreateTeam {org, name, description, users, privacy, token} = safeIO io
   where
     io = runReq defaultHttpConfig $ do
       let hs = headers token
