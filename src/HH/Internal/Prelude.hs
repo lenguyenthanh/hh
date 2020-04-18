@@ -1,8 +1,11 @@
 module HH.Internal.Prelude
-  ( module Prelude,
+  ( module Relude,
     module Data.Generics.Labels,
+    pack,
+    unpack,
   )
 where
 
 import Data.Generics.Labels
-import Prelude
+import Data.Text (pack, unpack)
+import Relude

@@ -4,7 +4,6 @@ module System.FilePath.Extended
   )
 where
 
-import Data.Text (Text, pack, unpack)
 import HH.Internal.Prelude
 import System.FilePath
 

@@ -47,6 +47,7 @@ dependencies:
 - dhall
 - turtle
 - generic-lens
+- relude
 
 default-extensions:
 - OverloadedStrings

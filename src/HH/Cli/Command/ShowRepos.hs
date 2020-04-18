@@ -12,7 +12,6 @@ where
 import Control.Lens
 import Control.Monad.Except
 import Control.Monad.Reader
-import Data.Text (Text, pack)
 import HH.Cli.Command.Internal.Common
 import HH.Cli.Command.Internal.Parser
 import HH.Effect.Config (UserConfig)

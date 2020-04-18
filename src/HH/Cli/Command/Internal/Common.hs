@@ -10,7 +10,6 @@ where
 
 import Control.Lens
 import Control.Monad.Except
-import Data.Text (Text)
 import HH.Effect.Config
 import HH.Effect.Console
 import HH.Effect.Github

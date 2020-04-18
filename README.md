@@ -1,18 +1,18 @@
 # hh
 
-- error handling
 - makefile
 - unit test
 - hedgehog
 - logging
-- Has a pattern
 - Replace System Directory with path-io
-- NameFieldPuns instead of RecordWildCards
 - revamp Default extensions
-- ormolu for formating
+- Use relude
 
 ## Done
 
 - overloaded-records and generic-lens for record type
 - Add compiler warning flag
 - Hlint
+- NameFieldPuns instead of RecordWildCards
+- ormolu for formating
+- error handling

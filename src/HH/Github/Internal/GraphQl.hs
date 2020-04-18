@@ -24,8 +24,6 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy.Char8 as BL
 import Data.Morpheus.Client (Fetch (..), defineByDocumentFile, gql)
 import Data.Morpheus.Types (ScalarValue (..))
-import Data.Text (Text, pack, unpack)
-import Data.Text.Encoding (encodeUtf8)
 import HH.Internal.Prelude
 import Network.HTTP.Req
 

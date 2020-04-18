@@ -10,8 +10,6 @@ where
 import Control.Error
 import Control.Exception.Safe (IOException)
 import Control.Monad.Reader
-import Data.Bifunctor (bimap)
-import Data.Text (Text, pack)
 import HH.AppConfig
 import HH.Effect.Config
 import HH.Effect.Console

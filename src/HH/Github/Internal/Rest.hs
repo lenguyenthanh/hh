@@ -21,10 +21,8 @@ where
 import Control.Exception.Safe
 import Control.Monad.Except
 import Data.Aeson
-import Data.Text
-import Data.Text.Encoding (encodeUtf8)
 import GHC.Generics
-import HH.Internal.Prelude
+import HH.Internal.Prelude hiding (Option)
 import Network.HTTP.Req
 
 data CreateTeam

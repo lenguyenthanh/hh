@@ -3,7 +3,6 @@
 module HH.Cli.Command.ShowConfig where
 
 import Control.Monad.Reader
-import Data.Text (pack)
 import HH.Effect.Config
 import HH.Effect.Console
 import HH.Internal.Prelude

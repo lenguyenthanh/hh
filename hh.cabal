@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a04d1589527ca528a0f2032c01bbfa7c9cdbce8d9333952bc039709c92e0f8fc
+-- hash: b6db0d8cf69fe3dad3a4add49d74835b1b54929f6c060fc59d01fc60cfaa7235
 
 name:           hh
 version:        0.1.0.0
@@ -78,6 +78,7 @@ library
     , optparse-applicative
     , path
     , regex-tdfa
+    , relude
     , req >=3.1.0
     , safe-exceptions
     , text
@@ -110,6 +111,7 @@ executable hh
     , optparse-applicative
     , path
     , regex-tdfa
+    , relude
     , req >=3.1.0
     , safe-exceptions
     , text
@@ -143,6 +145,7 @@ test-suite hh-test
     , optparse-applicative
     , path
     , regex-tdfa
+    , relude
     , req >=3.1.0
     , safe-exceptions
     , text

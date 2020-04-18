@@ -7,7 +7,6 @@ where
 
 import Data.Morpheus.Client
 import Data.Morpheus.Types
-import Data.Text (Text)
 import HH.Internal.Prelude
 
 scalarToText :: ScalarValue -> Maybe Text
