@@ -6,7 +6,7 @@
 - logging
 - Replace System Directory with path-io
 - revamp Default extensions
-- Use relude
+- ci
 
 ## Done
 
@@ -16,3 +16,4 @@
 - NameFieldPuns instead of RecordWildCards
 - ormolu for formating
 - error handling
+- Use relude

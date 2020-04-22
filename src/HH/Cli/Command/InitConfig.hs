@@ -18,11 +18,11 @@ import HH.Effect.Github
 import HH.Env
 import HH.Internal.Prelude
 import Options.Applicative
-import qualified Path as P
+import Path.Extended
 
 data InitArgs
   = InitArgs
-      { root :: Text,
+      { root :: Path Abs Dir,
         token :: Text
       }
   deriving (Show)
@@ -33,22 +33,19 @@ initArgsParser =
     <$> rootOption
     <*> tokenOption
 
-rootOption :: Parser Text
+rootOption :: Parser (Path Abs Dir)
 rootOption =
   option
     parseRoot
-    (long "root" <> short 'r' <> metavar "<dir>" <> help "Root directory for all repositories")
+    (long "root" <> short 'r' <> metavar "<dir>" <> help "Root directory for all repositories. This must be an absolute path.")
 
 tokenOption :: Parser Text
 tokenOption =
   strOption
     (long "token" <> short 't' <> metavar "Github token" <> help "We need your github token to query github api")
 
-parseRoot :: ReadM Text
-parseRoot = pack <$> eitherReader parseAbsDir
-
-parseAbsDir :: FilePath -> Either String String
-parseAbsDir f = bimap show P.fromAbsDir $ P.parseAbsDir f
+parseRoot :: ReadM (Path Abs Dir)
+parseRoot = eitherReader (first show . parseAbsDir)
 
 runSaveConfig ::
   (MonadReader Env m, MonadConfig m, MonadConsole m, MonadGithub m, MonadFileSystem m) =>
@@ -72,17 +69,17 @@ verifyAndSave conf InitArgs {root, token} = do
   name <- fmapLT (VerifyTokenError token) $ fetchUsername token
   fmapLT SaveConfigError . saveConfig conf $
     UserConfig
-      { absRootPath = root,
+      { absRootPath = fromAbsDir root,
         githubToken = token,
         githubUsername = name
       }
 
 data SaveConfigError
-  = CreateDirectoryError Text IOException
+  = CreateDirectoryError (Path Abs Dir) IOException
   | SaveConfigError IOException
   | VerifyTokenError Text GQLError
 
 showError :: SaveConfigError -> Text
-showError (CreateDirectoryError root e) = "Failed to create root directory " <> root <> "\n" <> pack (show e)
+showError (CreateDirectoryError root e) = "Failed to create root directory " <> fromAbsDir root <> "\n" <> pack (show e)
 showError (SaveConfigError e) = "Failed to save your configuration" <> "\n" <> pack (show e)
 showError (VerifyTokenError token msg) = "Failed to verify token: " <> token <> " because of: " <> (pack . show $ msg)

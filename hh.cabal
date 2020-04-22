@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b6db0d8cf69fe3dad3a4add49d74835b1b54929f6c060fc59d01fc60cfaa7235
+-- hash: 935fdbf719ce05966a7f0c618aa49980f2a7eb37912f1c865956e98f721005e5
 
 name:           hh
 version:        0.1.0.0
@@ -55,6 +55,7 @@ library
       HH.Internal.Prelude
       HH.Main
       HH.UserConfig
+      Path.Extended
       System.FilePath.Extended
   other-modules:
       Paths_hh
@@ -77,6 +78,7 @@ library
     , mtl
     , optparse-applicative
     , path
+    , path-io
     , regex-tdfa
     , relude
     , req >=3.1.0
@@ -110,6 +112,7 @@ executable hh
     , mtl
     , optparse-applicative
     , path
+    , path-io
     , regex-tdfa
     , relude
     , req >=3.1.0
@@ -144,6 +147,7 @@ test-suite hh-test
     , mtl
     , optparse-applicative
     , path
+    , path-io
     , regex-tdfa
     , relude
     , req >=3.1.0
